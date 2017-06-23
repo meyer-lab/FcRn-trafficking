@@ -1,0 +1,25 @@
+pipeline {
+  agent any
+  environment {
+    PATH = "/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/texlive/2017/bin/x86_64-darwin/"
+    LC_CTYPE = "en_US.UTF-8"
+  }
+  stages {
+    stage('Clean') {
+      steps { sh 'make gitclean' }
+    stage('Build') {
+      steps { sh 'make' }
+    }
+    stage('Test'){
+      steps { sh 'make testcover' }
+    }
+    stage('Deploy') {
+      when {
+        expression { env.BRANCH_NAME == 'master' }
+      }
+      steps {
+        sh 'make upload'
+      }
+    }
+  }
+}
