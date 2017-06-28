@@ -1,0 +1,10 @@
+Antibody,Clearance_ml/days/kg,β_phase_Thalf_hrs,AUCinf_μg*days/ml,Vss_ml/kg
+WT,0.58_0.17,49.3_8.8,41.2_23.6,1.11_0.15
+DHS,0.061_0.003,336_49.5,326.6_17.9,0.28_0.01
+LS,0.099_0.004,107_14.3,200.7_9.4,0.34_0.01
+# PK studies in Tg276 mouse model
+# human FcRn/mouse β2m
+# Human IgG has almost same binding properties to hFcRn/mβ2m comparing with hFcRn/hβ2m
+# Presence of mouse IgG in the serum
+# Since mouse IgG does not bind to hFcRn, it can not compete for binding to hFcRn with injected human IgG
+# Tg276 mice has mouse Fcγ receptors
