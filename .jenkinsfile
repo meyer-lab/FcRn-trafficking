@@ -6,21 +6,13 @@ pipeline {
   }
   stages {
     stage('Clean') {
-      steps { sh 'make gitclean' }
+      steps { sh 'git clean -ffdx' }
     }
     stage('Build') {
-      steps { sh 'make' }
+      steps { sh 'echo Build' }
     }
     stage('Test'){
-      steps { sh 'make testcover' }
-    }
-    stage('Deploy') {
-      when {
-        expression { env.BRANCH_NAME == 'master' }
-      }
-      steps {
-        sh 'make upload'
-      }
+      steps { sh 'echo testcover' }
     }
   }
 }
