@@ -3,14 +3,39 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
-
 ```{r}
-plot(cars)
+library(tidyverse)
+library(magrittr)
+
+binding <- read.csv("data/FcRn-binding.csv", comment.char = "#", na.strings = "-", stringsAsFactors = F)
+
+binding %<>% reshape2::melt(id.vars = c("Measurement", "pH"), variable.name = "Antibody") %>%
+  mutate(value = as.numeric(gsub("_.*", "", value)))
+
+bindingSel <- filter(binding, grepl("Kd", Measurement)) %>%
+  filter(!grepl("low", Measurement)) %>% filter(!grepl("med", Measurement))
+
+bindingc <- reshape2::dcast(bindingSel, Antibody ~ Measurement + pH)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+
+
+```{r}
+invivo <- read.csv("data/FcRn-invivo.csv",
+                   comment.char = "#",
+                   stringsAsFactors = F)
+
+
+invivo[, 2] <- as.numeric(gsub("_.*", "", invivo[, 2]))
+invivo[, 3] <- as.numeric(gsub("_.*", "", invivo[, 3]))
+invivo[, 4] <- as.numeric(gsub("_.*", "", invivo[, 4]))
+
+
+all <- full_join(bindingc, invivo, by = c("Antibody", "Antibody"))
+```
+
+```{r}
+ggplot(all, aes(x = all[,2], y = AUC, color = all[,3])) + geom_point()
+```
+

@@ -1,0 +1,38 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r, include=TRUE}
+library(rstan)
+
+rstan_options(auto_write = T)
+options(mc.cores = parallel::detectCores())
+
+stanmod <- stan_model("model/diff_model.stan")
+
+ddata <- list(wt_c = c(6.975, 1.579, 0.381, 0.107, 0.057, 0.025), # Last data point isn't real
+              ls_c = c(12.46, 7.44, 2.717, 1.967, 1.184, 0.540), # Fill in actual values
+              dhs_c = c(6.975, 1.579, 0.381, 0.107, 0.057, 0.025)) # Fill in actual values
+```
+
+AA
+
+```{r}
+fitopt <- optimizing(stanmod, data = ddata, verbose = T, hessian = T)
+```
+
+
+
+
+
+```{r}
+fit <- stan("model/diff_model.stan", data = ddata, verbose = T, chains = 8, iter = 200)
+```
+
+XX
+
+```{r}
+pairs(fit)
+```
+

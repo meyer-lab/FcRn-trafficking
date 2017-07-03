@@ -33,22 +33,33 @@ functions {
   }
 }
 data {
-  real<lower=0> ts[6];
   real wt_c[6];
+  real ls_c[6];
+  real dhs_c[6];
 }
 transformed data {
   real x_r[1];
   int x_i[1];
+  real ts[6];
   
   x_r[1] = 0.0;
   x_i[1] = 1;
+  
+  ts[1] = 24;
+  ts[2] = 96;
+  ts[3] = 192;
+  ts[4] = 288;
+  ts[5] = 360;
+  ts[6] = 456;
 }
 parameters {
   real<lower=0> Vc; // The volume of the central compartment
   real<lower=0> Vp; // The volume of the periferal compartment
   real<lower=0> Cl; // Nonspecific clearance rate
   real<lower=0> Q; // Flow exchange rate between compartments
-  real<lower=0> Qu; // Flow uptake into cells
+  real<lower=0> Qu_wt; // Flow uptake into cells
+  real<lower=0> Qu_ls; // Flow uptake into cells
+  real<lower=0> Qu_dhs; // Flow uptake into cells
   real<lower=0> varr; // Variance paramter
 }
 model {
@@ -58,24 +69,45 @@ model {
   
   Vc ~ lognormal(0, 1.0);
   Vp ~ lognormal(0, 1.0);
-  Cl ~ lognormal(0, 1.0);
+  Cl ~ lognormal(-3, 1.0);
   Q ~ lognormal(0, 1.0);
-  Qu ~ lognormal(0, 1.0);
+  Qu_wt ~ lognormal(-3, 1.0);
   varr ~ lognormal(0, 1.0);
+  Qu_ls ~ lognormal(-3, 1.0);
+  Qu_dhs ~ lognormal(-3, 1.0);
 
   theta[1] = Vc;
   theta[2] = Vp;
   theta[3] = Cl;
   theta[4] = Q;
-  theta[5] = Qu;
+  theta[5] = Qu_wt;
   
+  // Calculate data for wt condition
   c_hat = halfl_fcrn(ts, 14.0, theta, x_r, x_i);
   
   c_hat[6] = wt_c[6];
   
-  //sqErr = dot_self(log(c_hat) - log(to_vector(wt_c)));
+  sqErr = dot_self(c_hat - to_vector(wt_c)) / varr; // Setup error measurement
   
-  //sqErr ~ student_t(5, 0.0, varr);
+  sqErr ~ chi_square(5); // Match to Student's t distribution
   
   
+  // Calculate data for ls condition
+  theta[5] = Qu_ls;
+  
+  c_hat = halfl_fcrn(ts, 24.0, theta, x_r, x_i);
+  
+  sqErr = dot_self(c_hat - to_vector(ls_c)) / varr; // Setup error measurement
+  
+  sqErr ~ chi_square(6); // Match to Student's t distribution
+  
+  
+  // Calculate data for dhs condition
+  theta[5] = Qu_dhs;
+  
+  c_hat = halfl_fcrn(ts, 20.8, theta, x_r, x_i);
+  
+  sqErr = dot_self(c_hat - to_vector(dhs_c)) / varr; // Setup error measurement
+  
+  sqErr ~ chi_square(6); // Match to Student's t distribution
 }
