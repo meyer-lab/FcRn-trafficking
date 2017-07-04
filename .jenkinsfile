@@ -9,7 +9,7 @@ pipeline {
       steps { sh 'git clean -ffdx' }
     }
     stage('Build') {
-      steps { sh 'echo Build' }
+      steps { sh 'make all' }
     }
     stage('Test'){
       steps { sh 'echo testcover' }
