@@ -50,7 +50,6 @@ transformed data {
   x_i[1] = 1;
 }
 parameters {
-  real<lower=0,upper=100> Vc; // The volume of the central compartment
   real<lower=0,upper=100> Vp; // The volume of the periferal compartment
   real<lower=0,upper=1000> Q; // Flow exchange rate between compartments
   real<lower=0,upper=1000> Qu; // Flow uptake into cells
@@ -65,14 +64,13 @@ model {
   real theta[8];
   real sqErr;
   
-  Vc ~ lognormal(0, 0.5);
   Vp ~ lognormal(0, 1.0);
   Q ~ lognormal(0, 1.0);
   Qu ~ lognormal(-2, 1.0);
   varr ~ lognormal(-2, 0.5);
   Vin ~ lognormal(0, 1.0);
 
-  theta[1] = Vc;
+  theta[1] = 1.0; // Set the volume of the central compartment to 1.0
   theta[2] = Vp;
   theta[3] = 0.0; // Set nonspecific clearance to 0
   theta[4] = Q;
