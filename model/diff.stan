@@ -50,24 +50,24 @@ transformed data {
   x_i[1] = 1;
 }
 parameters {
-  real<lower=0,upper=100> Vp; // The volume of the periferal compartment
-  real<lower=0,upper=1000> Q; // Flow exchange rate between compartments
-  real<lower=0,upper=1000> Qu; // Flow uptake into cells
+  real<lower=0> Vp; // The volume of the periferal compartment
+  real<lower=0> Q; // Flow exchange rate between compartments
+  real<lower=0> Qu; // Flow uptake into cells
   real<lower=0,upper=1> sortF_wt; // Sorting fraction for recycling
   real<lower=0,upper=1> sortF_ls; // Sorting fraction for recycling
   real<lower=0,upper=1> releaseF_ls; // Sorting fraction for release
   real<lower=0,upper=1> sortF_dhs; // Sorting fraction for recycling
-  real<lower=0,upper=100> Vin; // Volume inside cells
-  real<lower=0,upper=10> varr; // Variance paramter
+  real<lower=0> Vin; // Volume inside cells
+  real<lower=0> varr; // Variance paramter
 }
 model {
   real theta[8];
   real sqErr;
   
-  Vp ~ lognormal(0, 1.0);
+  Vp ~ lognormal(0.0, 0.1);
   Q ~ lognormal(0, 1.0);
-  Qu ~ lognormal(-2, 1.0);
-  varr ~ lognormal(-2, 0.5);
+  Qu ~ lognormal(log(0.1), 0.5);
+  varr ~ lognormal(log(0.1), 0.5); // Set
   Vin ~ lognormal(0, 1.0);
 
   theta[1] = 1.0; // Set the volume of the central compartment to 1.0
