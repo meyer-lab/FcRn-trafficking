@@ -65,6 +65,8 @@ model {
   Qu ~ lognormal(log(0.1), 0.5);
   varr ~ lognormal(log(0.1), 0.5); // Set
   Vin ~ lognormal(0, 1.0);
+  sortF_dhs ~ uniform(sortF_wt, 1.0); // dhs should recycle more than wt
+  sortF_ls ~ uniform(sortF_dhs, 1.0); // ls should recycle more than dhs
 
   theta[1] = 1.0; // Set the volume of the central compartment to 1.0
   theta[2] = Vp;
