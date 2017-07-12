@@ -1,5 +1,5 @@
 functions {
-	real[] fcrn_model(real t, real[] C, real[] th, real[] x_r, int[] x_i) {
+  real[] fcrn_model(real t, real[] C, real[] th, real[] x_r, int[] x_i) {
     real dC_dt[3];
     real Cl;
     real Q;
@@ -20,9 +20,8 @@ functions {
     // th[8] is Vin
 
     return dC_dt;
-	}
-
-  real halfl_fcrn(real[] ts, real C0, real[] th, real[] x_r, int[] x_i, real[] data_c) {
+  }
+  real halfl_fcrn(real[] ts, real C0, real[] th, real[] x_r, int[] x_i) {
     real C_t0[3];
     real C_hat[6, 3];
 
@@ -32,7 +31,7 @@ functions {
 
     C_hat = integrate_ode_bdf(fcrn_model, C_t0, 0.0, ts, th, x_r, x_i);
 
-    return dot_self(to_vector(C_hat[, 1]) ./ to_vector(data_c)); // Setup error measurement
+    return dot_self(to_vector(C_hat[, 1]) ./ to_vector(x_r)); // Setup error measurement
   }
 }
 data {
@@ -43,10 +42,7 @@ data {
   real ts[6];
 }
 transformed data {
-  real x_r[1];
   int x_i[1];
-  
-  x_r[1] = 0.0;
   x_i[1] = 1;
 }
 parameters {
@@ -80,14 +76,14 @@ model {
   theta[8] = Vin;
   
   // Calculate data for wt condition
-  sqErr = halfl_fcrn(ts, 14.0, theta, x_r, x_i, wt_c) / varr;
+  sqErr = halfl_fcrn(ts, 14.0, theta, wt_c, x_i) / varr;
   sqErr ~ chi_square(6); // Match to Student's t distribution
 
 
   // Calculate data for dhs condition
   theta[6] = sortF_dhs;
   
-  sqErr = halfl_fcrn(ts, 20.8, theta, x_r, x_i, dhs_c) / varr;
+  sqErr = halfl_fcrn(ts, 20.8, theta, dhs_c, x_i) / varr;
   sqErr ~ chi_square(6); // Match to Student's t distribution
   
   
@@ -95,13 +91,13 @@ model {
   theta[6] = sortF_ls;
   theta[7] = releaseF_ls;
   
-  sqErr = halfl_fcrn(ts, 24.0, theta, x_r, x_i, ls_c) / varr;
+  sqErr = halfl_fcrn(ts, 24.0, theta, ls_c, x_i) / varr;
   sqErr ~ chi_square(6); // Match to Student's t distribution
 
 
   // Calculate data for FcRn KO
   theta[6] = 0.0;
 
-  sqErr = halfl_fcrn(ts, 20.0, theta, x_r, x_i, ko_c) / varr;
+  sqErr = halfl_fcrn(ts, 20.0, theta, ko_c, x_i) / varr;
   sqErr ~ chi_square(6); // Match to Student's t distribution
 }
