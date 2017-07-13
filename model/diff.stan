@@ -60,10 +60,10 @@ model {
   real theta[8];
   real sqErr;
 
-  Vp ~ lognormal(0.0, 0.1);
-  Q ~ lognormal(0, 1.0);
+  Vp ~ lognormal(0.0, 1.0);
+  Q ~ lognormal(0.0, 1.0);
   Qu ~ lognormal(log(0.1), 0.5);
-  varr ~ lognormal(log(0.1), 0.2); // Set
+  varr ~ lognormal(log(0.1), 0.5); // Set
   Vin ~ lognormal(0, 1.0);
   sortF_dhs ~ uniform(sortF_wt, 1.0); // dhs should recycle more than wt
   sortF_ls ~ uniform(sortF_dhs, 1.0); // ls should recycle more than dhs
