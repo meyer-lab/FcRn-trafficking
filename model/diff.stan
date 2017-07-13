@@ -59,11 +59,11 @@ parameters {
 model {
   real theta[8];
   real sqErr;
-  
+
   Vp ~ lognormal(0.0, 0.1);
   Q ~ lognormal(0, 1.0);
   Qu ~ lognormal(log(0.1), 0.5);
-  varr ~ lognormal(log(0.1), 0.5); // Set
+  varr ~ lognormal(log(0.1), 0.2); // Set
   Vin ~ lognormal(0, 1.0);
   sortF_dhs ~ uniform(sortF_wt, 1.0); // dhs should recycle more than wt
   sortF_ls ~ uniform(sortF_dhs, 1.0); // ls should recycle more than dhs
@@ -78,28 +78,28 @@ model {
   theta[8] = Vin;
   
   // Calculate data for wt condition
-  sqErr = halfl_fcrn(ts, 14.0, theta, wt_c, x_i) / varr;
-  sqErr ~ chi_square(6); // Match to Student's t distribution
+  sqErr = halfl_fcrn(ts, 14.0, theta, wt_c, x_i);
 
 
   // Calculate data for dhs condition
   theta[6] = sortF_dhs;
   
-  sqErr = halfl_fcrn(ts, 20.8, theta, dhs_c, x_i) / varr;
-  sqErr ~ chi_square(6); // Match to Student's t distribution
+  sqErr = sqErr + halfl_fcrn(ts, 20.8, theta, dhs_c, x_i);
   
-  
+
   // Calculate data for ls condition
   theta[6] = sortF_ls;
   theta[7] = releaseF_ls;
   
-  sqErr = halfl_fcrn(ts, 24.0, theta, ls_c, x_i) / varr;
-  sqErr ~ chi_square(6); // Match to Student's t distribution
+  sqErr = sqErr + halfl_fcrn(ts, 24.0, theta, ls_c, x_i);
 
 
   // Calculate data for FcRn KO
   theta[6] = 0.0;
 
-  sqErr = halfl_fcrn(ts, 20.0, theta, ko_c, x_i) / varr;
-  sqErr ~ chi_square(6); // Match to Student's t distribution
+  sqErr = sqErr + halfl_fcrn(ts, 20.0, theta, ko_c, x_i);
+
+
+  sqErr = sqErr / varr;
+  sqErr ~ chi_square(24); // Match to chi square distribution
 }
