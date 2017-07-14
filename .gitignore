@@ -1,4 +1,2 @@
 .Rproj.user
-diff_model.rds
-*.nb.html
-diff.rds
+model/diff.rds

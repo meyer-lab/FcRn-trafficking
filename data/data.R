@@ -3,3 +3,11 @@ ddata <- list(ts = c(24, 96, 192, 288, 360, 456), # timepoints
               ls_c = c(12.46, 7.44, 2.717, 1.967, 1.184, 0.540),
               dhs_c = c(12.296, 7.155, 5.582, 4.220, 3.617, 2.960),
               ko_c = c(6.66, 0.34, 0.00579, 0.000099, 0.0000047, 0.0000001)) # Based on fit to another study
+
+runsample <- function() {
+	library(rstan);
+
+	fit <- stan("model/diff.stan", cores = parallel::detectCores(), data = ddata, chains = 12, verbose = T, control = list(adapt_delta = 0.99));
+
+	save(fit, file = "samples.rds")
+}
