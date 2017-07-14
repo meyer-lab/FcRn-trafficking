@@ -1,0 +1,45 @@
+---
+title: "FcRn trafficking analysis"
+output: pdf_document
+---
+
+```{r, message=TRUE, include=FALSE}
+library(rstan)
+load('samples.rds')
+```
+
+As we discussed, it's challenging to infer what the exact conditions of FcRn engagement are within the endosome and at the cell surface. Therefore, here I've assembled a purely phenomenological trafficking model. This model therefore doesn't directly employ the binding measurements. However, by comparing the results here to those binding measurements we can come up with how they correspond.
+
+![Model diagram: A central and peripheral compartment are present.](model/diagram.png "Model")
+
+I've made a couple assumptions here for the sake of modeling: That there is no nonspecific clearance—i.e. that the only clearance is through cell uptake and failed recycling. Relaxing this is possible and wouldn't change the results very much. All the volumes are scaled to the central compartment volume, but this doesn't change the results outside of the units. Recycling versus endosomal degradation is assumed to occur according to a sorting parameter `sortF`. Inherent in this is the assumption that FcRn-mediated recycling is not saturated by the experiment. Making saturation possible is feasible but would make the model considerably more complex. Release or recapture is partitioned through another paramter `releaseF`, and recycled IgG that is not released ends up back in the endosome. Finally, sorting and release are assumed to vary in the same order as their affinities—i.e. recycling of the pH 5.8 higher affinity IgG is assumed to be greater than the lower affinity one, and IgG with no measurable pH 7.4 affinity is assumed to be fully released.
+
+\cleardoublepage
+
+This data was then fit to the PK studies data using `stan`. Rather than a local ensitivity analysis, I've employed Markov Chain Monte Carlo, which is a Bayesian approach that fully samples the model posterior. While computationally much more expensive, this provides the most rigorous confidence intervals for each parameter. I've included the overview output below which most importantly shows that the fitting process worked and came to convergence (e.g. Rhat < 1.1).
+
+```{r}
+print(fit)
+```
+
+XX
+
+```{r, fig.height=2, fig.width=5}
+stan_plot(fit, pars = c("Vp", "Qu", "Vin",
+                        "releaseF_ls", "actual_sortF_wt",
+                        "actual_sortF_dhs", "sortF_ls"))
+```
+
+These results provide a few observations: Changing the pH 5.8 affinity from 111 nM to 55 nM only corresponds to a small increase in IgG recycling. This is in contrast to the WT to DHS change of 550 nM to 111 nM where sorting is greatly affected. It makes sense that further affinity enrichment in the endosome should have diminishing returns with respect to the sorting fraction since a greater fraction of IgG becomes bound. While we don't have an exact estimate for the amount of LS IgG recaptured, the 95% confidence bound is that it's greater than 30% (note: 1 - releaseF).
+
+\cleardoublepage
+
+Finally we can take a look at the "pairs" plot to see if any additional information will further specify any of these parameters:
+
+```{r}
+pairs(fit, pars = c("Vp", "Q", "Qu", "Vin",
+                    "releaseF_ls", "actual_sortF_wt",
+                    "actual_sortF_dhs", "sortF_ls"))
+```
+
+There don't seem to be any strong correlations between parameters suggesting that, for example, more exactly specifying parameters such as `Q` is unlikely to improve our ability to infer the sorting parameters.
