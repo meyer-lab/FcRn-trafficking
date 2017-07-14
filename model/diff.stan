@@ -7,17 +7,16 @@ functions {
     real sortF;
     real releaseF;
     
-    Cl = th[3]; // Nonspecific clearance rate
-    Q = th[4]; // Flow exchange rate between compartments
-    Qu = th[5]; // Flow uptake into cells
-    sortF = th[6]; // Sorting fraction for recycling
-    releaseF = th[7]; // Sorting fraction for release
+    Q = th[2]; // Flow exchange rate between compartments
+    Qu = th[3]; // Flow uptake into cells
+    sortF = th[4]; // Sorting fraction for recycling
+    releaseF = th[5]; // Sorting fraction for release
 
     // Cc, Cp, Cin
-    dC_dt[1] = (Q*C[2] - Q*C[1] - Cl*C[1])/th[1]; // th[1] is Vc
-    dC_dt[2] = (Q*C[1] - Q*C[2] - Qu*C[2] + Qu*C[3]*sortF*releaseF)/th[2]; // th[2] is Vp
-    dC_dt[3] = Qu/th[8]*(C[2] + C[3]*((1 - releaseF)*sortF - 1));
-    // th[8] is Vin
+    dC_dt[1] = (Q*C[2] - Q*C[1])/1.0; // Vc is 1, no nonspecific clearance
+    dC_dt[2] = (Q*C[1] - Q*C[2] - Qu*C[2] + Qu*C[3]*sortF*releaseF)/th[1]; // th[1] is Vp
+    dC_dt[3] = Qu/th[6]*(C[2] + C[3]*((1 - releaseF)*sortF - 1));
+    // th[6] is Vin
 
     return dC_dt;
   }
@@ -57,7 +56,7 @@ parameters {
   real<lower=0> varr; // Variance parameter
 }
 model {
-  real theta[8];
+  real theta[6];
   real sqErr;
 
   Vp ~ lognormal(0.0, 1.0);
@@ -66,36 +65,34 @@ model {
   varr ~ lognormal(log(0.1), 0.5); // Set
   Vin ~ lognormal(0, 1.0);
 
-  theta[1] = 1.0; // Set the volume of the central compartment to 1.0
-  theta[2] = Vp;
-  theta[3] = 0.0; // Set nonspecific clearance to 0
-  theta[4] = Q;
-  theta[5] = Qu;
+  theta[1] = Vp;
+  theta[2] = Q;
+  theta[3] = Qu;
 
   // wt recycles less than either engineered IgG's, so actual sorting is product
-  theta[6] = sortF_wt * sortF_dhs * sortF_ls;
-  theta[7] = 1.0;
-  theta[8] = Vin;
+  theta[4] = sortF_wt * sortF_dhs * sortF_ls;
+  theta[5] = 1.0;
+  theta[6] = Vin;
   
   // Calculate data for wt condition
   sqErr = halfl_fcrn(ts, 14.0, theta, wt_c, x_i);
 
 
   // dhs recycles less than ls, so actual sorting is product
-  theta[6] = sortF_dhs * sortF_ls;
+  theta[4] = sortF_dhs * sortF_ls;
   
   sqErr = sqErr + halfl_fcrn(ts, 20.8, theta, dhs_c, x_i);
   
 
   // Calculate data for ls condition
-  theta[6] = sortF_ls;
-  theta[7] = releaseF_ls;
+  theta[4] = sortF_ls;
+  theta[5] = releaseF_ls;
   
   sqErr = sqErr + halfl_fcrn(ts, 24.0, theta, ls_c, x_i);
 
 
   // Calculate data for FcRn KO
-  theta[6] = 0.0;
+  theta[4] = 0.0;
 
   sqErr = sqErr + halfl_fcrn(ts, 20.0, theta, ko_c, x_i);
 
