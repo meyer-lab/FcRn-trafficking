@@ -100,3 +100,9 @@ model {
   sqErr = sqErr / varr;
   sqErr ~ chi_square(24); // Match to chi square distribution
 }
+generated quantities {
+  real actual_sortF_wt;
+  real actual_sortF_dhs;
+  actual_sortF_wt = sortF_wt * sortF_dhs * sortF_ls;
+  actual_sortF_dhs = sortF_dhs * sortF_ls;
+}
