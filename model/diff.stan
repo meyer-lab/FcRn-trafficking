@@ -31,7 +31,7 @@ functions {
 
     C_hat = integrate_ode_bdf(fcrn_model, C_t0, 0.0, ts, th, x_r, x_i);
 
-    return dot_self(to_vector(C_hat[, 1]) ./ to_vector(x_r)); // Setup error measurement
+    return dot_self(to_vector(C_hat[, 1]) - to_vector(x_r)); // Setup error measurement
   }
 }
 data {
@@ -54,7 +54,7 @@ parameters {
   real<lower=0,upper=1> releaseF_ls; // Sorting fraction for release
   real<lower=0,upper=1> sortF_dhs; // Sorting fraction for recycling
   real<lower=0> Vin; // Volume inside cells
-  real<lower=0> varr; // Variance paramter
+  real<lower=0> varr; // Variance parameter
 }
 model {
   real theta[8];
@@ -65,15 +65,15 @@ model {
   Qu ~ lognormal(log(0.1), 0.5);
   varr ~ lognormal(log(0.1), 0.5); // Set
   Vin ~ lognormal(0, 1.0);
-  sortF_dhs ~ uniform(sortF_wt, 1.0); // dhs should recycle more than wt
-  sortF_ls ~ uniform(sortF_dhs, 1.0); // ls should recycle more than dhs
 
   theta[1] = 1.0; // Set the volume of the central compartment to 1.0
   theta[2] = Vp;
   theta[3] = 0.0; // Set nonspecific clearance to 0
   theta[4] = Q;
   theta[5] = Qu;
-  theta[6] = sortF_wt;
+
+  // wt recycles less than either engineered IgG's, so actual sorting is product
+  theta[6] = sortF_wt * sortF_dhs * sortF_ls;
   theta[7] = 1.0;
   theta[8] = Vin;
   
@@ -81,8 +81,8 @@ model {
   sqErr = halfl_fcrn(ts, 14.0, theta, wt_c, x_i);
 
 
-  // Calculate data for dhs condition
-  theta[6] = sortF_dhs;
+  // dhs recycles less than ls, so actual sorting is product
+  theta[6] = sortF_dhs * sortF_ls;
   
   sqErr = sqErr + halfl_fcrn(ts, 20.8, theta, dhs_c, x_i);
   
