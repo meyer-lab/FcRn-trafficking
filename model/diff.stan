@@ -38,6 +38,7 @@ data {
   real ls_c[6];
   real dhs_c[6];
   real ko_c[6];
+  real yte_c[6];
   real ts[6];
 }
 transformed data {
@@ -51,6 +52,8 @@ parameters {
   real<lower=0,upper=1> sortF_wt; // Sorting fraction for recycling
   real<lower=0,upper=1> sortF_ls; // Sorting fraction for recycling
   real<lower=0,upper=1> releaseF_ls; // Sorting fraction for release
+  real<lower=0,upper=1> sortF_yte; // Sorting fraction for recycling
+  real<lower=0,upper=1> releaseF_yte; // Sorting fraction for release
   real<lower=0,upper=1> sortF_dhs; // Sorting fraction for recycling
   real<lower=0> Vin; // Volume inside cells
   real<lower=0> varr; // Variance parameter
@@ -70,7 +73,7 @@ model {
   theta[3] = Qu;
 
   // wt recycles less than either engineered IgG's, so actual sorting is product
-  theta[4] = sortF_wt * sortF_dhs * sortF_ls;
+  theta[4] = sortF_wt * sortF_dhs * sortF_ls * sortF_yte;
   theta[5] = 1.0;
   theta[6] = Vin;
   
@@ -79,16 +82,23 @@ model {
 
 
   // dhs recycles less than ls, so actual sorting is product
-  theta[4] = sortF_dhs * sortF_ls;
+  theta[4] = sortF_dhs * sortF_ls * sortF_yte;
   
   sqErr = sqErr + halfl_fcrn(ts, 20.8, theta, dhs_c, x_i);
   
 
   // Calculate data for ls condition
-  theta[4] = sortF_ls;
-  theta[5] = releaseF_ls;
+  theta[4] = sortF_ls * sortF_yte;
+  theta[5] = releaseF_ls * releaseF_yte;
   
   sqErr = sqErr + halfl_fcrn(ts, 24.0, theta, ls_c, x_i);
+
+
+  // Calculate data for ls condition
+  theta[4] = sortF_yte;
+  theta[5] = releaseF_yte;
+  
+  sqErr = sqErr + halfl_fcrn(ts, 18.3, theta, yte_c, x_i);
 
 
   // Calculate data for FcRn KO
@@ -103,6 +113,10 @@ model {
 generated quantities {
   real actual_sortF_wt;
   real actual_sortF_dhs;
-  actual_sortF_wt = sortF_wt * sortF_dhs * sortF_ls;
-  actual_sortF_dhs = sortF_dhs * sortF_ls;
+  real actual_sortF_ls;
+  real actual_release_ls;
+  actual_sortF_wt = sortF_wt * sortF_dhs * sortF_ls * sortF_yte;
+  actual_sortF_dhs = sortF_dhs * sortF_ls * sortF_yte;
+  actual_sortF_ls = sortF_ls * sortF_yte;
+  actual_release_ls = releaseF_ls * releaseF_yte;
 }
