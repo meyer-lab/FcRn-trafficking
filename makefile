@@ -17,3 +17,6 @@ Analysis.pdf: Analysis.Rmd
 
 shiny: samples.rds
 	R -e 'load("samples.rds"); shinystan::launch_shinystan(fit)'
+
+predictions.rds: samples.rds
+	R -e 'source("calcPredictions.R")'

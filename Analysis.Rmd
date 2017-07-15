@@ -21,13 +21,17 @@ This data was then fit to the PK studies data using `stan`. Rather than a local 
 ```{r}
 print(fit)
 ```
+XX
+
+```{r, fig.height=2, fig.width=5}
+stan_plot(fit, pars = c("Q", "Vp", "Qu", "Vin"))
+```
 
 XX
 
 ```{r, fig.height=2, fig.width=5}
-stan_plot(fit, pars = c("Vp", "Qu", "Vin",
-                        "releaseF_ls", "actual_sortF_wt",
-                        "actual_sortF_dhs", "sortF_ls"))
+stan_plot(fit, pars = c("actual_sortF_wt", "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
+                        "actual_release_ls", "releaseF_yte"))
 ```
 
 These results provide a few observations: Changing the pH 5.8 affinity from 111 nM to 55 nM only corresponds to a small increase in IgG recycling. This is in contrast to the WT to DHS change of 550 nM to 111 nM where sorting is greatly affected. It makes sense that further affinity enrichment in the endosome should have diminishing returns with respect to the sorting fraction since a greater fraction of IgG becomes bound. While we don't have an exact estimate for the amount of LS IgG recaptured, the 95% confidence bound is that it's greater than 30% (note: 1 - releaseF).
@@ -35,9 +39,8 @@ These results provide a few observations: Changing the pH 5.8 affinity from 111 
 Finally we can take a look at the "pairs" plot to see if any additional information will further specify any of these parameters:
 
 ```{r}
-pairs(fit, pars = c("Vp", "Q", "Qu", "Vin",
-                    "releaseF_ls", "actual_sortF_wt",
-                    "actual_sortF_dhs", "sortF_ls"))
+pairs(fit, pars = c("actual_sortF_wt", "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
+                        "actual_release_ls", "releaseF_yte"), lower.panel = sum, gap = 0.25)
 ```
 
 There don't seem to be any strong correlations between parameters suggesting that, for example, more exactly specifying parameters such as `Q` is unlikely to improve our ability to infer the sorting parameters.

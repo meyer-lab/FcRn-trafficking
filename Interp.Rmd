@@ -1,0 +1,33 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(magrittr)
+load('predictions.rds')
+
+output %<>% mutate(halfl = halfl/24)
+
+model <- lm(halfl ~ poly(releaseF, 2)*poly(sortF, 6) + sortF, output)
+
+output <- cbind(output,
+                as.data.frame(predict(model,
+                                      output,
+                                      interval = c("prediction"),
+                                      level = 0.8)))
+
+ggplot(output, aes(x = sortF,
+                   color = as.factor(releaseF),
+                   group = releaseF)) +
+  geom_ribbon(aes(ymin = lwr, ymax = upr, fill = as.factor(releaseF)), linetype = "blank", alpha = 0.6) +
+  theme_bw() +
+  xlab("Sorting fraction") +
+  ylab("log10(Half life in days)")
+```
+
+
+X
+
