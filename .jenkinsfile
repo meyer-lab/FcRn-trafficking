@@ -9,8 +9,10 @@ pipeline {
       steps { sh 'git clean -ffdx' }
     }
     stage('Build') {
-      steps { sh 'make all' }
-      archiveArtifacts artifacts: 'Analysis.pdf', onlyIfSuccessful: true
+      steps {
+        sh 'make all'
+        archiveArtifacts artifacts: 'Analysis.pdf', onlyIfSuccessful: true
+      }
     }
   }
 }
