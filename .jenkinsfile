@@ -10,9 +10,7 @@ pipeline {
     }
     stage('Build') {
       steps { sh 'make all' }
-    }
-    stage('Test'){
-      steps { sh 'echo testcover' }
+      archiveArtifacts artifacts: 'Analysis.pdf', onlyIfSuccessful: true
     }
   }
 }

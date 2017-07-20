@@ -1,4 +1,5 @@
 library(dplyr)
+library(pbapply)
 load('samples.rds')
 
 halfl_fcrn <- function(th) {
@@ -29,7 +30,7 @@ halfl_fcrn <- function(th) {
 samp_n <- 1000
 
 sorts <- expand.grid(id = seq_len(samp_n),
-                     sortF = seq(0, 0.95, length.out = 20),
+                     sortF = seq(0, 0.98, length.out = 40),
                      releaseF = seq(0, 1, length.out = 3))
 
 output <- as.data.frame(rstan::extract(fit)) %>%
@@ -38,13 +39,16 @@ output <- as.data.frame(rstan::extract(fit)) %>%
   dplyr::mutate(id = row_number()) %>%
   dplyr::full_join(sorts, by = c("id"))
 
+# Make sure progress bar shows up
+pboptions(type = "txt")
+
 # Initiate cluster
 cl <- parallel::makeCluster(parallel::detectCores() - 1)
 
 # Run the predictions
-output$halfl <- pbapply::pbapply(output, 1, halfl_fcrn, cl = cl)
+output$halfl <- pbapply(output, 1, halfl_fcrn, cl = cl)
 
 # Shutdown the cluster
 parallel::stopCluster(cl)
 
-save(output, file = 'predictions.rds')
+save(output, file = 'predictions.rds', compress = "bzip2")
