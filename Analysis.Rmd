@@ -40,17 +40,6 @@ It makes sense that further affinity enrichment in the endosome should have dimi
 
 While we don't have an exact estimate for the amount of LS IgG recaptured, the 95% confidence bound is that it's greater than 30% (note: 1 - releaseF).
 
-Finally we can take a look at the "pairs" plot to see if any additional information will further specify any of these parameters:
-
-```{r}
-pairs(fit, pars = c("actual_sortF_wt", "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
-                    "actual_release_ls", "releaseF_yte"),
-      lower.panel = sum,
-      gap = 0.25)
-```
-
-There don't seem to be any strong correlations between parameters suggesting that, for example, more exactly specifying parameters such as `Q` is unlikely to improve our ability to infer the sorting parameters.
-
 Lastly, I've plotted the predicted half-life for a particular sorting and release fraction below, taking into account the uncertainty of the previous fitting. The plot shows the prediction's 80% prediction intervals.
 
 ```{r}
