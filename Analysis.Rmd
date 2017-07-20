@@ -43,30 +43,31 @@ While we don't have an exact estimate for the amount of LS IgG recaptured, the 9
 Lastly, I've plotted the predicted half-life for a particular sorting and release fraction below, taking into account the uncertainty of the previous fitting. The plot shows the prediction's 80% prediction intervals.
 
 ```{r}
+library(dplyr)
+library(magrittr)
 load('predictions.rds')
 
-output <- dplyr::mutate(output, halfl = halfl/24)
+output <- dplyr::mutate(output, halfl = halfl/24) %>%
+  group_by(sortF, releaseF) %>%
+  summarize(lwra = quantile(halfl, 0.25),
+            upra = quantile(halfl, 0.75),
+            lwr = quantile(halfl, 0.1),
+            upr = quantile(halfl, 0.9)) %>%
+  ungroup()
 
-model <- lm(halfl ~ poly(releaseF, 2)*poly(sortF, 6) + sortF, output)
 
-output <- cbind(output,
-                as.data.frame(predict(model,
-                                      output,
-                                      interval = c("prediction"),
-                                      level = 0.8)))
-
-ggplot2::ggplot(output, ggplot2::aes(x = sortF,
-                                     color = as.factor(releaseF),
-                                     group = releaseF)) +
-  ggplot2::geom_ribbon(ggplot2::aes(ymin = lwr,
-                                    ymax = upr,
-                                    fill = as.factor(releaseF)),
+ggplot2::ggplot(output, ggplot2::aes(x = sortF, color = as.factor(releaseF), group = releaseF)) +
+  ggplot2::geom_ribbon(ggplot2::aes(ymin = lwr, ymax = upr, fill = as.factor(releaseF)),
+                       linetype = "blank",
+                       alpha = 0.3) +
+  ggplot2::geom_ribbon(ggplot2::aes(ymin = lwra, ymax = upra, fill = as.factor(releaseF)),
                        linetype = "blank",
                        alpha = 0.6) +
   ggplot2::xlim(0, 1) +
   ggplot2::theme_bw() +
   ggplot2::xlab("Sorting fraction") +
-  ggplot2::ylab("log10(Half life in days)")
+  ggplot2::ylab("log10(Half life in days)") + 
+  ggplot2::scale_y_log10()
 ```
 
 What this shows most clearly is that both parameters matter. As soon as you've optimized the endosomal sorting, surface release becomes a much more critical factor.
