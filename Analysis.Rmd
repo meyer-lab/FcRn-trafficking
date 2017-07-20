@@ -5,7 +5,9 @@ output: pdf_document
 
 ```{r, message=TRUE, include=FALSE}
 library(rstan)
+library(magrittr)
 load('samples.rds')
+load('predictions.rds')
 ```
 
 As we discussed, it's challenging to infer what the exact conditions of FcRn engagement are within the endosome and at the cell surface. Therefore, here I've assembled a purely phenomenological trafficking model. This model, therefore, doesn't directly employ the binding measurements. However, by comparing the results here to those binding measurements we can come up with how they correspond.
@@ -40,20 +42,16 @@ It makes sense that further affinity enrichment in the endosome should have dimi
 
 While we don't have an exact estimate for the amount of LS IgG recaptured, the 95% confidence bound is that it's greater than 30% (note: 1 - releaseF).
 
-Lastly, I've plotted the predicted half-life for a particular sorting and release fraction below, taking into account the uncertainty of the previous fitting. The plot shows the prediction's 80% prediction intervals.
+Lastly, I've plotted the predicted half-life for a particular sorting and release fraction below, taking into account the uncertainty of the previous fitting. The plot shows the prediction's 50% and 80% prediction intervals.
 
 ```{r}
-library(dplyr)
-library(magrittr)
-load('predictions.rds')
-
 output <- dplyr::mutate(output, halfl = halfl/24) %>%
-  group_by(sortF, releaseF) %>%
-  summarize(lwra = quantile(halfl, 0.25),
-            upra = quantile(halfl, 0.75),
-            lwr = quantile(halfl, 0.1),
-            upr = quantile(halfl, 0.9)) %>%
-  ungroup()
+  dplyr::group_by(sortF, releaseF) %>%
+  dplyr::summarize(lwra = quantile(halfl, 0.25),
+                   upra = quantile(halfl, 0.75),
+                   lwr = quantile(halfl, 0.1),
+                   upr = quantile(halfl, 0.9)) %>%
+  dplyr::ungroup()
 
 
 ggplot2::ggplot(output, ggplot2::aes(x = sortF, color = as.factor(releaseF), group = releaseF)) +
