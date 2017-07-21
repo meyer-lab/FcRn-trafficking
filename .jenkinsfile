@@ -10,7 +10,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh 'make all'
+        sh 'make -j 8 all'
         archiveArtifacts artifacts: 'Analysis.pdf', onlyIfSuccessful: true
       }
     }
