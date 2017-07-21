@@ -35,7 +35,7 @@ stan_plot(fit, pars = c("Vp", "Qu", "Vin", "actual_sortF_wt",
 
 These results provide a few observations: Changing the pH 5.8 affinity from 111 nM to 55 nM only corresponds to a small increase in IgG recycling. This is in contrast to the WT to DHS change of 550 nM to 111 nM where sorting is greatly affected.
 
-It makes sense that further affinity enrichment in the endosome should have diminishing returns with respect to the sorting fraction since a greater fraction of IgG becomes bound. Looking across the `sortF` parameters, this suggests the effective concentration of endosomal IgG is around 500 nM. Interpreting this as the actual endosomal concentration, though, would require assuming that the endosomal compartment comes to equilibrium.
+It makes sense that further affinity enrichment in the endosome should have diminishing returns with respect to the sorting fraction since a greater fraction of IgG becomes bound. Looking at the `sortF` parameters, this suggests the effective concentration of endosomal IgG is around 500 nM. Interpreting this as the actual endosomal concentration, though, would require assuming that the endosomal compartment comes to equilibrium.
 
 While we don't have an exact estimate for the amount of LS IgG recaptured, the 95% confidence bound is that it's greater than 30% (note: 1 - releaseF).
 
