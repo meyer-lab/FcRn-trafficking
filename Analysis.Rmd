@@ -27,7 +27,7 @@ print(fit)
 Looking at the posterior confidence intervals:
 
 ```{r, fig.height=4, fig.width=5}
-stan_plot(fit, pars = c("Q", "Vp", "Qu", "Vin", "actual_sortF_wt",
+stan_plot(fit, pars = c("Vp", "Qu", "Vin", "actual_sortF_wt",
                         "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
                         "actual_release_ls", "releaseF_yte"))
 ```
