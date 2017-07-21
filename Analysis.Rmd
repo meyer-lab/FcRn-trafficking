@@ -21,7 +21,8 @@ I've made a couple assumptions here for the sake of modeling: That there is no n
 This data was then fit to the PK studies data using `stan`. Rather than a local sensitivity analysis, I've employed Markov Chain Monte Carlo, which is a Bayesian approach that fully samples the model posterior. While computationally much more expensive, this provides the most rigorous confidence intervals for each parameter. I've included the overview output below which most importantly shows that the fitting process worked and came to convergence (e.g. Rhat < 1.1).
 
 ```{r}
-print(fit)
+print(fit, pars = c("sortF_wt", "sortF_ls", "sortF_dhs"),
+      include = F, probs = c(0.025, 0.25, 0.75, 0.975))
 ```
 
 Looking at the posterior confidence intervals:
