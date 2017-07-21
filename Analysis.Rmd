@@ -42,7 +42,7 @@ While we don't have an exact estimate for the amount of LS IgG recaptured, the 9
 Lastly, I've plotted the predicted half-life for a particular sorting and release fraction below, taking into account the uncertainty of the previous fitting. The plot shows the prediction's 50% and 80% prediction intervals.
 
 ```{r}
-output <- dplyr::mutate(output, halfl = halfl/24) %>%
+output %<>% dplyr::mutate(halfl = halfl/24) %>%
   dplyr::group_by(sortF, releaseF) %>%
   dplyr::summarize(lwra = quantile(halfl, 0.25),
                    upra = quantile(halfl, 0.75),
@@ -58,8 +58,8 @@ ggplot2::ggplot(output, ggplot2::aes(x = sortF, color = as.factor(releaseF), gro
   ggplot2::geom_ribbon(ggplot2::aes(ymin = lwra, ymax = upra, fill = as.factor(releaseF)),
                        linetype = "blank",
                        alpha = 0.6) +
-  ggplot2::xlim(0, 1) +
-  ggplot2::theme_bw() +
+  ggplot2::theme_minimal() +
+  ggplot2::scale_x_continuous(breaks=seq(0, 1, 0.1)) +
   ggplot2::xlab("Sorting fraction") +
   ggplot2::ylab("log10(Half life in days)") + 
   ggplot2::scale_y_log10()
