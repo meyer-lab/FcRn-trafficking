@@ -23,16 +23,12 @@ This data was then fit to the PK studies data using `stan`. Rather than a local 
 ```{r}
 print(fit)
 ```
-XX
 
-```{r, fig.height=2, fig.width=5}
-stan_plot(fit, pars = c("Q", "Vp", "Qu", "Vin"))
-```
+Looking at the posterior confidence intervals:
 
-XX
-
-```{r, fig.height=2, fig.width=5}
-stan_plot(fit, pars = c("actual_sortF_wt", "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
+```{r, fig.height=4, fig.width=5}
+stan_plot(fit, pars = c("Q", "Vp", "Qu", "Vin", "actual_sortF_wt",
+                        "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
                         "actual_release_ls", "releaseF_yte"))
 ```
 
