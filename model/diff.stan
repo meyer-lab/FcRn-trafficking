@@ -125,9 +125,9 @@ model {
 
 
   // Calculate data for FcRn KO
-  // theta[4] = 0.0;
+  theta[4] = 0.0;
 
-  // halfl = halfl_fcrn(ts, theta, x_r, x_i);
+  halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  // halfl ~ normal(49.3, 2.7); // TODO: This is the stderr, check if correct
+  halfl ~ normal(24, 1.0); // TODO: Need values for this
 }
