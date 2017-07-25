@@ -1,9 +1,4 @@
-ddata <- list(ts = c(24, 96, 192, 288, 360, 456), # timepoints
-              wt_c = c(6.975, 1.579, 0.381, 0.107, 0.057, 0.025), # XXX: Last data point isn't real
-              ls_c = c(12.46, 7.44, 2.717, 1.967, 1.184, 0.540),
-              dhs_c = c(12.296, 7.155, 5.582, 4.220, 3.617, 2.960),
-              yte_c = c(11.94, 5.33, 2.29, 1.29, 1.37, 0.93),
-              ko_c = c(6.66, 0.34, 0.00579, 0.000099, 0.0000047, 0.0000001)) # Based on fit to another study
+ddata <- list(ts = seq(1, 1000, length=1000)) # timepoints
 
 runsample <- function() {
 	library(rstan);

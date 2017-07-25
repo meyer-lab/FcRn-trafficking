@@ -20,9 +20,12 @@ functions {
 
     return dC_dt;
   }
-  real halfl_fcrn(real[] ts, real C0, real[] th, real[] x_r, int[] x_i) {
+  real halfl_fcrn(real[] ts, real[] th, real[] x_r, int[] x_i) {
     real C_t0[3];
-    real C_hat[6, 3];
+    real C_hat[1000, 3];
+    real C0;
+
+    C0 = 20.0; // TODO: What is the C0 concentration?
 
     C_t0[1] = C0;
     C_t0[2] = 0.0;
@@ -30,20 +33,24 @@ functions {
 
     C_hat = integrate_ode_bdf(fcrn_model, C_t0, 0.0, ts, th, x_r, x_i);
 
-    return dot_self(to_vector(C_hat[, 1]) - to_vector(x_r)); // Setup error measurement
+    for (N in 1:size(ts)) {
+      if (C_hat[N, 1] < C0/2) {
+        return ts[N];
+      }
+    }
+
+    return max(ts);
   }
 }
 data {
-  real wt_c[6];
-  real ls_c[6];
-  real dhs_c[6];
-  real ko_c[6];
-  real yte_c[6];
-  real ts[6];
+  real ts[1000];
 }
 transformed data {
   int x_i[1];
+  real x_r[1];
+
   x_i[1] = 1;
+  x_r[1] = 0.0;
 }
 parameters {
   real<lower=0> Vp; // The volume of the periferal compartment
@@ -56,61 +63,8 @@ parameters {
   real<lower=0,upper=1> releaseF_yte; // Sorting fraction for release
   real<lower=0,upper=1> sortF_dhs; // Sorting fraction for recycling
   real<lower=0> Vin; // Volume inside cells
-  real<lower=0> varr; // Variance parameter
 }
-model {
-  real theta[6];
-  real sqErr;
-
-  Vp ~ lognormal(0.0, 1.0);
-  Q ~ lognormal(0.0, 1.0);
-  Qu ~ lognormal(log(0.1), 0.5);
-  varr ~ lognormal(log(0.1), 0.5); // Set
-  Vin ~ lognormal(0, 1.0);
-
-  theta[1] = Vp;
-  theta[2] = Q;
-  theta[3] = Qu;
-
-  // wt recycles less than either engineered IgG's, so actual sorting is product
-  theta[4] = sortF_wt * sortF_dhs * sortF_ls * sortF_yte;
-  theta[5] = 1.0;
-  theta[6] = Vin;
-  
-  // Calculate data for wt condition
-  sqErr = halfl_fcrn(ts, 14.0, theta, wt_c, x_i);
-
-
-  // dhs recycles less than ls, so actual sorting is product
-  theta[4] = sortF_dhs * sortF_ls * sortF_yte;
-  
-  sqErr = sqErr + halfl_fcrn(ts, 20.8, theta, dhs_c, x_i);
-  
-
-  // Calculate data for ls condition
-  theta[4] = sortF_ls * sortF_yte;
-  theta[5] = releaseF_ls * releaseF_yte;
-  
-  sqErr = sqErr + halfl_fcrn(ts, 24.0, theta, ls_c, x_i);
-
-
-  // Calculate data for ls condition
-  theta[4] = sortF_yte;
-  theta[5] = releaseF_yte;
-  
-  sqErr = sqErr + halfl_fcrn(ts, 18.3, theta, yte_c, x_i);
-
-
-  // Calculate data for FcRn KO
-  theta[4] = 0.0;
-
-  sqErr = sqErr + halfl_fcrn(ts, 20.0, theta, ko_c, x_i);
-
-
-  sqErr = sqErr / varr;
-  sqErr ~ chi_square(24); // Match to chi square distribution
-}
-generated quantities {
+transformed parameters {
   real actual_sortF_wt;
   real actual_sortF_dhs;
   real actual_sortF_ls;
@@ -119,4 +73,61 @@ generated quantities {
   actual_sortF_dhs = sortF_dhs * sortF_ls * sortF_yte;
   actual_sortF_ls = sortF_ls * sortF_yte;
   actual_release_ls = releaseF_ls * releaseF_yte;
+}
+model {
+  real theta[6];
+  real halfl;
+
+  Vp ~ lognormal(0.0, 1.0);
+  Q ~ lognormal(0.0, 1.0);
+  Qu ~ lognormal(log(0.1), 0.5);
+  Vin ~ lognormal(0, 1.0);
+
+  theta[1] = Vp;
+  theta[2] = Q;
+  theta[3] = Qu;
+
+  // wt recycles less than either engineered IgG's, so actual sorting is product
+  theta[4] = actual_sortF_wt;
+  theta[5] = 1.0;
+  theta[6] = Vin;
+  
+  // Calculate data for wt condition
+  halfl = halfl_fcrn(ts, theta, x_r, x_i);
+
+  halfl ~ normal(49.3, 2.7); // TODO: This is the stderr, check if correct
+
+
+  // dhs recycles less than ls, so actual sorting is product
+  theta[4] = actual_sortF_dhs;
+  
+  halfl = halfl_fcrn(ts, theta, x_r, x_i);
+
+  halfl ~ normal(335.9, 14.9); // TODO: This is the stderr, check if correct
+  
+
+  // Calculate data for ls condition
+  theta[4] = actual_sortF_ls;
+  theta[5] = actual_release_ls;
+  
+  halfl = halfl_fcrn(ts, theta, x_r, x_i);
+
+  halfl ~ normal(106.9, 4.3); // TODO: This is the stderr, check if correct
+
+
+  // Calculate data for ls condition
+  theta[4] = sortF_yte;
+  theta[5] = releaseF_yte;
+  
+  halfl = halfl_fcrn(ts, theta, x_r, x_i);
+
+  halfl ~ normal(204.3, 5.2); // TODO: This is the stderr, check if correct
+
+
+  // Calculate data for FcRn KO
+  // theta[4] = 0.0;
+
+  // halfl = halfl_fcrn(ts, theta, x_r, x_i);
+
+  // halfl ~ normal(49.3, 2.7); // TODO: This is the stderr, check if correct
 }
