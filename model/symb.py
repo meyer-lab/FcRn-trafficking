@@ -1,6 +1,8 @@
 import sympy as sp
 
-t, Q, Qu, sortF, Vp, releaseF, Ve = sp.symbols('t Q Qu sortF Vp releaseF Ve')
+t, Q, Qu, sortF, Vp, releaseF, Ve = sp.symbols('t Q Qu sortF Vp releaseF Ve',
+                                               real=True,
+                                               positive=True)
 Cc = sp.Function("Cc")(t)
 Cp = sp.Function("Cp")(t)
 Ce = sp.Function("Ce")(t)
