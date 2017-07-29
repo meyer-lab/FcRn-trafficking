@@ -2,30 +2,7 @@ library(dplyr)
 library(pbapply)
 load('samples.rds')
 
-halfl_fcrn <- function(th) {
-  fcrn_model <- function(t, state, parameters) {
-    with(as.list(c(state, parameters)), {
-      dCc = Q*Cp - Q*Cc
-      dCp = (Q*Cc - Q*Cp - Qu*Cp + Qu*Cin*sortF*releaseF)/Vp
-      dCin = Qu/Vin*(Cp + Cin*((1 - releaseF)*sortF - 1))
-      
-      list(c(dCc, dCp, dCin))
-    })
-  }
-  
-  C0 <- 20.0
-  
-  if (th['sortF']*th['releaseF'] < 0.4) {
-    ts <- seq_len(100)
-  } else {
-    ts <- seq(0, 10000, length = 3000)
-  }
-  
-  odeSol <- deSolve::ode(y = c(Cc = C0, Cp = 0, Cin = 0),
-                         times = ts, func = fcrn_model, parms = th)
-  
-  return(approx(odeSol[,2], odeSol[,1], C0/2.0)$y)
-}
+expose_stan_functions("model/diff.stan")
 
 samp_n <- 1000
 

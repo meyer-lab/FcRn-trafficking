@@ -1,9 +1,12 @@
-ddata <- list(ts = seq(1, 1000, length=1000)) # timepoints
-
-runsample <- function() {
+runsample <- function(name) {
 	library(rstan);
 
-	fit <- stan("model/diff.stan", cores = parallel::detectCores(), data = ddata, chains = 12, verbose = T, control = list(adapt_delta = 0.99));
+	fit <- stan(paste("model/", name, ".stan", sep = ""),
+		cores = parallel::detectCores(),
+		data = list(ts = seq(1, 1000, length=1000)),
+		chains = 12,
+		verbose = T,
+		control = list(adapt_delta = 0.99));
 
-	save(fit, file = "samples.rds")
+	save(fit, file = paste("model/", name, "_samples.rds", sep = ""))
 }

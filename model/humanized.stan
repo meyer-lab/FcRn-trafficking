@@ -1,5 +1,6 @@
 #include "common.stan"
 model {
+  // Half-life data is from "Scarlette" mice
   real theta[6];
   real halfl;
 
@@ -20,7 +21,7 @@ model {
   // Calculate data for wt condition
   halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  halfl ~ normal(49.3, 2.7); // TODO: This is the stderr, check if correct
+  halfl ~ normal(101.1, 11.4); // TODO: This is the stderr, check if correct
 
 
   // dhs recycles less than ls, so actual sorting is product
@@ -28,7 +29,7 @@ model {
   
   halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  halfl ~ normal(335.9, 14.9); // TODO: This is the stderr, check if correct
+  halfl ~ normal(323.0, 24.1); // TODO: This is the stderr, check if correct
   
 
   // Calculate data for ls condition
@@ -37,7 +38,7 @@ model {
   
   halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  halfl ~ normal(106.9, 4.3); // TODO: This is the stderr, check if correct
+  halfl ~ normal(284.1, 9.7); // TODO: This is the stderr, check if correct
 
 
   // Calculate data for yte condition
@@ -46,7 +47,7 @@ model {
   
   halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  halfl ~ normal(204.3, 5.2); // TODO: This is the stderr, check if correct
+  halfl ~ normal(294.7, 17.8); // TODO: This is the stderr, check if correct
 
 
   // Calculate data for FcRn KO
