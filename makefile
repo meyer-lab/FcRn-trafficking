@@ -11,7 +11,7 @@ clean:
 	rm -f Analysis.pdf
 
 model/%.rds: model/%.stan
-	R -e 'rstan::stan_model("model/diff.stan", auto_write = T)'
+	R -e "rstan::stan_model(\"$<\", auto_write = T)"
 
 model/%_samples.rds: model/%.rds
 	R -e "source(\"data/data.R\"); runsample(\"$*\")"
