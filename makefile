@@ -1,7 +1,11 @@
 
-.PHONY: all shiny clean
+.PHONY: all shiny clean model sample
 
-all: model/diff.rds Analysis.pdf
+all: model/diff.rds Analysis.pdf model/humanized.rds
+
+model: model/diff.rds model/humanized.rds
+
+sample: model/diff_samples.rds model/humanized_samples.rds
 
 clean:
 	rm -f Analysis.pdf
