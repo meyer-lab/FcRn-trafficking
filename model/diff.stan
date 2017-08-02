@@ -44,6 +44,8 @@ functions {
 }
 data {
   real ts[1000];
+  real halflData[5];
+  real halflStd[5];
 }
 transformed data {
   int x_i[1];
@@ -95,7 +97,7 @@ model {
   // Calculate data for wt condition
   halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  halfl ~ normal(49.3, 2.7); // TODO: This is the stderr, check if correct
+  halfl ~ normal(halflData[1], halflStd[1]);
 
 
   // dhs recycles less than ls, so actual sorting is product
@@ -103,7 +105,7 @@ model {
   
   halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  halfl ~ normal(335.9, 14.9); // TODO: This is the stderr, check if correct
+  halfl ~ normal(halflData[2], halflStd[2]);
   
 
   // Calculate data for ls condition
@@ -112,7 +114,7 @@ model {
   
   halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  halfl ~ normal(106.9, 4.3); // TODO: This is the stderr, check if correct
+  halfl ~ normal(halflData[3], halflStd[3]);
 
 
   // Calculate data for yte condition
@@ -121,7 +123,7 @@ model {
   
   halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  halfl ~ normal(204.3, 5.2); // TODO: This is the stderr, check if correct
+  halfl ~ normal(halflData[4], halflStd[4]);
 
 
   // Calculate data for FcRn KO
@@ -129,5 +131,5 @@ model {
 
   halfl = halfl_fcrn(ts, theta, x_r, x_i);
 
-  halfl ~ normal(24, 1.0); // TODO: Need values for this
+  halfl ~ normal(halflData[5], halflStd[5]);
 }

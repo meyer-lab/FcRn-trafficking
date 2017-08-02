@@ -1,19 +1,17 @@
 
 .PHONY: all shiny clean model sample
 
-all: model/diff.rds Analysis.pdf model/humanized.rds
-
-model: model/diff.rds model/humanized.rds
+all: model/diff.rds
 
 sample: model/diff_samples.rds model/humanized_samples.rds
 
 clean:
 	rm -f Analysis.pdf
 
-model/%.rds: model/%.stan
-	R -e "rstan::stan_model(\"$<\", auto_write = T)"
+model/diff.rds: model/diff.stan
+	R -e 'rstan::stan_model("model/diff.stan", auto_write = T)'
 
-model/%_samples.rds: model/%.rds
+model/%_samples.rds: model/diff.rds
 	R -e "source(\"data/data.R\"); runsample(\"$*\")"
 
 Analysis.pdf: Analysis.Rmd
