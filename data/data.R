@@ -1,14 +1,30 @@
-ddata <- list(ts = c(24, 96, 192, 288, 360, 456), # timepoints
-              wt_c = c(6.975, 1.579, 0.381, 0.107, 0.057, 0.025), # XXX: Last data point isn't real
-              ls_c = c(12.46, 7.44, 2.717, 1.967, 1.184, 0.540),
-              dhs_c = c(12.296, 7.155, 5.582, 4.220, 3.617, 2.960),
-              yte_c = c(11.94, 5.33, 2.29, 1.29, 1.37, 0.93),
-              ko_c = c(6.66, 0.34, 0.00579, 0.000099, 0.0000047, 0.0000001)) # Based on fit to another study
+# TODO: Spread data is stdev — check this is right
+# TODO: Need values for FcRn KO
 
-runsample <- function() {
+dataBase <- list(halflData = c(49.3, 335.9, 106.9, 204.3, 24),
+	halflStd = c(2.7, 14.9, 4.3, 5.2, 1.0),
+	ts = seq(1, 1000, length=100))
+
+dataScarlett <- list(halflData = c(101.1, 323.0, 284.1, 294.7, 24),
+	halflStd = c(11.4, 24.1, 9.7, 17.8, 1.0),
+	ts = seq(1, 1000, length=100))
+
+
+runsample <- function(name) {
 	library(rstan);
 
-	fit <- stan("model/diff.stan", cores = parallel::detectCores(), data = ddata, chains = 12, verbose = T, control = list(adapt_delta = 0.99));
+	if (name == "diff") {
+		dataIn <- dataBase
+	} else if (name == "humanized") {
+		dataIn <- dataScarlett
+	}
 
-	save(fit, file = "samples.rds")
+	fit <- stan("model/diff.stan",
+		cores = parallel::detectCores(),
+		data = dataIn,
+		chains = parallel::detectCores(),
+		verbose = T,
+		control = list(adapt_delta = 0.99));
+
+	save(fit, file = paste("model/", name, "_samples.rds", sep = ""))
 }
