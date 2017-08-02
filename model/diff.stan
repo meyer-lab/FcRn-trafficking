@@ -1,4 +1,8 @@
 functions {
+  // Precise method, which guarantees v = v1 when t = 1.
+  real lerp(real v0, real v1, real t) {
+    return (1 - t) * v0 + t * v1;
+  }
   real[] fcrn_model(real t, real[] C, real[] th, real[] x_r, int[] x_i) {
     real dC_dt[3];
     real Cl;
@@ -22,8 +26,9 @@ functions {
   }
   real halfl_fcrn(real[] ts, real[] th, real[] x_r, int[] x_i) {
     real C_t0[3];
-    real C_hat[1000, 3];
+    real C_hat[100, 3];
     real C0;
+    real inter;
 
     C0 = 20.0; // TODO: What is the C0 concentration?
 
@@ -33,9 +38,12 @@ functions {
 
     C_hat = integrate_ode_bdf(fcrn_model, C_t0, 0.0, ts, th, x_r, x_i);
 
-    for (N in 1:size(ts)) {
+    for (N in 2:size(ts)) {
       if (C_hat[N, 1] < C0/2) {
-        return ts[N];
+        // Find interpolation point
+        inter = (C0/2 - C_hat[N-1, 1]) / (C_hat[N, 1] - C_hat[N-1, 1]);
+
+        return lerp(ts[N-1], ts[N], inter);
       }
     }
 
@@ -43,7 +51,7 @@ functions {
   }
 }
 data {
-  real ts[1000];
+  real ts[100];
   real halflData[5];
   real halflStd[5];
 }

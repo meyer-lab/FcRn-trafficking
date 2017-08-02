@@ -3,11 +3,11 @@
 
 dataBase <- list(halflData = c(49.3, 335.9, 106.9, 204.3, 24),
 	halflStd = c(2.7, 14.9, 4.3, 5.2, 1.0),
-	ts = seq(1, 1000, length=1000))
+	ts = seq(1, 1000, length=100))
 
 dataScarlett <- list(halflData = c(101.1, 323.0, 284.1, 294.7, 24),
 	halflStd = c(11.4, 24.1, 9.7, 17.8, 1.0),
-	ts = seq(1, 1000, length=1000))
+	ts = seq(1, 1000, length=100))
 
 
 runsample <- function(name) {
