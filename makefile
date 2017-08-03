@@ -1,7 +1,7 @@
 
 .PHONY: all shiny clean model sample
 
-all: model/diff.rds
+all: model/diff.rds Analysis.pdf ModelDescription.pdf
 
 sample: model/diff_samples.rds model/humanized_samples.rds
 
@@ -14,8 +14,8 @@ model/diff.rds: model/diff.stan
 model/%_samples.rds: model/diff.rds
 	R -e "source(\"data/data.R\"); runsample(\"$*\")"
 
-Analysis.pdf: Analysis.Rmd
-	Rscript -e "library(utils); rmarkdown::render('Analysis.Rmd', 'pdf_document')"
+%.pdf: %.Rmd
+	Rscript -e "library(utils); rmarkdown::render('$*.Rmd', 'pdf_document')"
 
 diff_shiny: model/diff_samples.rds
 	R -e 'load("model/diff_samples.rds"); shinystan::launch_shinystan(fit)'
