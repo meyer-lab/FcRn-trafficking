@@ -6,67 +6,37 @@ output: pdf_document
 ```{r, message=TRUE, include=FALSE}
 library(rstan)
 library(magrittr)
-load('samples.rds')
-load('predictions.rds')
+parrs <- c("Vp", "Qu", "Vin", "actual_sortF_wt",
+           "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
+           "actual_release_ls", "releaseF_yte")
 ```
-
-As we discussed, it's challenging to infer what the exact conditions of FcRn engagement are within the endosome and at the cell surface. I've therefore assembled a purely phenomenological trafficking model. This model doesn't directly employ the binding measurements to set the trafficking parameters. By comparing the results here to those binding measurements, however, we can come up with how they correspond.
-
-![Model diagram](model/diagram.png "Model")\ 
-
-$$ \frac{\delta C_c}{\delta t} = Q (C_p - C_c) $$
-$$ \frac{\delta C_p}{\delta t} V_p = Q C_c - Q C_p - Q_u C_p + Q_u C_e f_{sort} f_{release} $$
-$$ \frac{\delta C_e}{\delta t} V_e = Q_u \bigg(C_p + C_e \Big((1 - f_{release}) f_{sort} - 1\Big)\bigg) $$
-
-$V_c$
-: Central compartment volume (set to equal 1 since the model scales proportionally)
-
-$V_p$
-: Peripheral volume (relative to Vc)
-
-$V_e$
-: Total endosomal volume (relative to Vc)
-
-$Q$
-: Transport between the central and peripheral compartments (in units of Vc/hr)
-
-$Q_u$
-: Volume of uptake (in units of Vc/hr) into cells
-
-$C_c$
-: Central compartment concentration (ug/mL)
-
-$C_p$
-: Peripheral concentration (ug/mL)
-
-$C_e$
-: Endosomal concentration (ug/mL)
-
-$f_{release}$
-: Fraction of recycled IgG that is released upon presentation at the surface
-
-$f_{sort}$
-: Fraction of endocytosed IgG that goes on to be recycled
-
-
-I've made a couple assumptions here for the sake of modeling: That there is no nonspecific clearance—i.e. that the only clearance is through cell uptake and failed recycling. Relaxing this is possible and wouldn't change the results very much. All the volumes are scaled to the central compartment volume, but this doesn't change the results outside of the units. Recycling versus endosomal degradation is assumed to occur according to a sorting parameter `sortF`. Inherent in this is the assumption that FcRn-mediated recycling is not saturated by the experiment. Including saturation is feasible but would make the model considerably more complex. Release or recapture is partitioned through another parameter `releaseF`, and recycled IgG that is not released ends up back in the endosome. Finally, sorting and release are assumed to vary in the same order as their affinities—i.e. recycling of the pH 5.8 higher affinity IgG is assumed to be greater than the lower affinity one. IgG with no measurable pH 7.4 affinity is assumed to be fully released.
-
-\cleardoublepage
 
 This data was then fit to the PK studies data using `stan`. Rather than a local sensitivity analysis, I've employed Markov Chain Monte Carlo, which is a Bayesian approach that fully samples the model posterior. While computationally much more expensive, this provides the most rigorous confidence intervals for each parameter. I've included the overview output below which most importantly shows that the fitting process worked and came to convergence (e.g. Rhat < 1.1).
 
 ```{r}
-print(fit, pars = c("sortF_wt", "sortF_ls", "sortF_dhs", "releaseF_ls"),
-      include = F, probs = c(0.025, 0.25, 0.75, 0.975))
+load('model/diff_samples.rds')
+print(fit, pars = parrs, probs = c(0.025, 0.975))
 ```
 
 Looking at the posterior confidence intervals:
 
 ```{r, fig.height=4, fig.width=5}
-stan_plot(fit, pars = c("Vp", "Qu", "Vin", "actual_sortF_wt",
-                        "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
-                        "actual_release_ls", "releaseF_yte"))
+stan_plot(fit, pars = parrs)
 ```
+
+
+
+```{r}
+load('model/humanized_samples.rds')
+print(fit, pars = parrs, probs = c(0.025, 0.975))
+```
+
+Looking at the posterior confidence intervals:
+
+```{r, fig.height=4, fig.width=5}
+stan_plot(fit, pars = parrs)
+```
+
 
 These results provide a few observations: Changing the pH 5.8 affinity from 111 nM to 55 nM only corresponds to a small increase in IgG recycling. This is in contrast to the WT to DHS change of 550 nM to 111 nM where sorting is greatly affected.
 
@@ -77,6 +47,7 @@ While we don't have an exact estimate for the amount of LS IgG recaptured, the 9
 Lastly, I've plotted the predicted half-life for a particular sorting and release fraction below, taking into account the uncertainty of the previous fitting. The plot shows the prediction's 50% and 80% prediction intervals.
 
 ```{r}
+load('predictions.rds')
 output %<>% dplyr::mutate(halfl = halfl/24) %>%
   dplyr::group_by(sortF, releaseF) %>%
   dplyr::summarize(lwra = quantile(halfl, 0.25),
