@@ -17,8 +17,11 @@ model/%_samples.rds: model/diff.rds
 Analysis.pdf: Analysis.Rmd
 	Rscript -e "library(utils); rmarkdown::render('Analysis.Rmd', 'pdf_document')"
 
-shiny: samples.rds
-	R -e 'load("samples.rds"); shinystan::launch_shinystan(fit)'
+diff_shiny: model/diff_samples.rds
+	R -e 'load("model/diff_samples.rds"); shinystan::launch_shinystan(fit)'
+
+humanized_shiny: model/humanized_samples.rds
+	R -e 'load("model/humanized_samples.rds"); shinystan::launch_shinystan(fit)'
 
 predictions.rds: samples.rds
 	R -e 'source("calcPredictions.R")'
