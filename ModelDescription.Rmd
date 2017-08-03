@@ -6,7 +6,6 @@ output: pdf_document
 ```{r, message=TRUE, include=FALSE}
 library(rstan)
 library(magrittr)
-load('samples.rds')
 load('predictions.rds')
 ```
 
