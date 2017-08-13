@@ -9,6 +9,7 @@ output: pdf_document
 library(dplyr)
 library(ggplot2)
 library(directlabels)
+library(scales)
 
 get_params <- function() {
   load('model/diff_samples.rds')
@@ -67,13 +68,14 @@ Lastly, I've plotted the predicted half-life for a particular sorting and releas
 
 ```{r pressure, echo=FALSE}
 e <- ggplot(output, aes(x = sortF, y = releaseF, z = halfl)) + 
-  geom_contour(aes(color = ..level..), breaks = c(72, 96, 200, 300, 400, 800, 1200)) +
+  geom_contour(aes(color = ..level..), breaks = c(72, 96, 200, 300, 400, 600, 1200)) +
   theme_bw() + 
-  annotate("text", label = "o", x = 0.8, y = 0.99, color = "black") + 
-  annotate("text", label = "o", x = 0.95, y = 0.73, color = "black") + 
-  annotate("text", label = "o", x = 0.96, y = 0.76, color = "black") + 
+  annotate("text", label = "o", x = 0.8, y = 0.99, color = "black") +
+  annotate("text", label = "o", x = 0.95, y = 0.73, color = "black") +
+  annotate("text", label = "o", x = 0.96, y = 0.76, color = "black") +
   annotate("text", label = "o", x = 0.94, y = 0.99, color = "black") +
-  xlab("Endosomal Sorting Fraction")
+  xlab("Endosomal Sorting Fraction") +
+  scale_x_continuous(trans = "atanh", limits = c(0.7, 0.99))
 
 e <- direct.label(e, "top.pieces")
 plot(e)
