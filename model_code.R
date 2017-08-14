@@ -1,32 +1,22 @@
+jacFunc <- function(t, y, p) {
+  with(as.list(c(p)), {
+    matrix(c(-Q,  Q/Vp,          0,
+             Q,  -(Q + Qu)/Vp,  Qu/Vin,
+             0,  Qu*sortF*releaseF/Vp,  Qu/Vin*((1 - releaseF)*sortF - 1)
+    ), 3, 3)
+  })
+}
+
 halfl_fcrn <- function(th) {
-  fcrn_model <- function(t, state, parameters) {
-    with(as.list(c(state, parameters)), {
-      dCc = Q*Cp - Q*Cc
-      dCp = (Q*Cc - Q*Cp - Qu*Cp + Qu*Cin*sortF*releaseF)/Vp
-      dCin = Qu/Vin*(Cp + Cin*((1 - releaseF)*sortF - 1))
-      
-      list(c(dCc, dCp, dCin))
-    })
-  }
-  
-  jacFunc <- function(t, y, p) {
-    with(as.list(c(p)), {
-      matrix(c(-Q,  Q/Vp,          0,
-               Q,  -(Q + Qu)/Vp,  Qu/Vin,
-               0,  Qu*sortF*releaseF/Vp,  Qu/Vin*((1 - releaseF)*sortF - 1)
-      ), 3, 3)
-    })
-  }
-  
   C0 <- 20.0
   
-  ts <- seq(0, 19 / (1 - th['sortF']) + 30, length = 40)
+  jac <- jacFunc(0.0, 0.0, th)
   
-  odeSol <- deSolve::lsoda(y = c(Cc = C0, Cp = 0, Cin = 0),
-                           times = ts, func = fcrn_model, parms = th,
-                           jacfunc = jacFunc, jactype = "fullusr")
+  outt <- uniroot(function(t) expAtv(jac, c(C0, 0.0, 0.0), t)$eAtv[1] - C0/2,
+                  lower = 0,
+                  upper = 10000)
   
-  return(approx(odeSol[,2], odeSol[,1], C0/2.0)$y)
+  return(outt$root)
 }
 
 plot_halfls <- function(fit) {
@@ -35,8 +25,8 @@ plot_halfls <- function(fit) {
     filter(lp__ == max(lp__))
   
   sorts <- expand.grid(id = 1,
-                       sortF = seq(0.5, 0.98, length.out = 30),
-                       releaseF = seq(0.25, 1, length.out = 30))
+                       sortF = seq(0.5, 0.98, length.out = 50),
+                       releaseF = seq(0.25, 1, length.out = 50))
   
   output <- best_fit %>%
     mutate(id = 1) %>%
