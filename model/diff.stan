@@ -1,8 +1,4 @@
 functions {
-  // Precise method, which guarantees v = v1 when t = 1.
-  real lerp(real v0, real v1, real t) {
-    return (1 - t) * v0 + t * v1;
-  }
   real fcrn_model(real t, matrix A, vector C_t0) {
     return (matrix_exp(t * A) * C_t0)[1];
   }
@@ -16,12 +12,12 @@ functions {
     real Vin;
     matrix[3, 3] A;
     
+    Vp = th[1]; // Peripheral volume
     Q = th[2]; // Flow exchange rate between compartments
     Qu = th[3]; // Flow uptake into cells
     sortF = th[4]; // Sorting fraction for recycling
     releaseF = th[5]; // Sorting fraction for release
-    Vp = th[1];
-    Vin = th[6];
+    Vin = th[6]; // Endosomal volume
     
     A[1, 1] = -Q;
     A[1, 2] = Q;
@@ -35,39 +31,44 @@ functions {
     
     return(A);
   }
-  real halfl_fcrn(real[] ts, real[] th) {
-    real C_hat[100];
-    real inter;
-    real C0;
+  real halfl_fcrn(real[] th) {
     vector[3] C_t0;
     matrix[3, 3] A;
+    vector[3] interv; // Interval of halflives to look over
+    
+    interv[1] = 0; // Lower bound
+    interv[2] = 1000; // Midpoint
+    interv[3] = 2000; // Upper bound
     
     A = make_Matrix(th);
     
-    C0 = 20.0; // TODO: What is the C0 concentration?
-    
-    C_t0[1] = C0;
+    C_t0[1] = 20.0; // TODO: What is the C0 concentration?
     C_t0[2] = 0.0;
     C_t0[3] = 0.0;
     
-    for (N in 1:size(ts)) {
-      C_hat[N] = fcrn_model(ts[N], A, C_t0);
+    // If we start out of bounds just return the upper bound
+    if (fcrn_model(interv[3], A, C_t0) > C_t0[1]/2) {
+      return (interv[3]);
     }
-
-    for (N in 2:size(ts)) {
-      if (C_hat[N] < C0/2) {
-        // Find interpolation point
-        inter = (C0/2 - C_hat[N-1]) / (C_hat[N] - C_hat[N-1]);
-
-        return lerp(ts[N-1], ts[N], inter);
+    
+    for (N in 1:100) {
+      if (fcrn_model(interv[2], A, C_t0) > C_t0[1]/2) {
+        interv[1] = interv[2];
+      } else {
+        interv[3] = interv[2];
+      }
+      
+      interv[2] = (interv[3] - interv[1])/2 + interv[1];
+      
+      if ((interv[3] - interv[1]) < 0.1) {
+        return(interv[2]);
       }
     }
 
-    return max(ts);
+    return 10000;
   }
 }
 data {
-  real ts[100];
   real halflData[5];
   real halflStd[5];
 }
@@ -112,7 +113,7 @@ model {
   theta[6] = Vin;
   
   // Calculate data for wt condition
-  halfl = halfl_fcrn(ts, theta);
+  halfl = halfl_fcrn(theta);
 
   halfl ~ normal(halflData[1], halflStd[1]);
 
@@ -120,7 +121,7 @@ model {
   // dhs recycles less than ls, so actual sorting is product
   theta[4] = actual_sortF_dhs;
   
-  halfl = halfl_fcrn(ts, theta);
+  halfl = halfl_fcrn(theta);
 
   halfl ~ normal(halflData[2], halflStd[2]);
   
@@ -129,7 +130,7 @@ model {
   theta[4] = actual_sortF_ls;
   theta[5] = actual_release_ls;
   
-  halfl = halfl_fcrn(ts, theta);
+  halfl = halfl_fcrn(theta);
 
   halfl ~ normal(halflData[3], halflStd[3]);
 
@@ -138,7 +139,7 @@ model {
   theta[4] = sortF_yte;
   theta[5] = releaseF_yte;
   
-  halfl = halfl_fcrn(ts, theta);
+  halfl = halfl_fcrn(theta);
 
   halfl ~ normal(halflData[4], halflStd[4]);
 
@@ -146,7 +147,7 @@ model {
   // Calculate data for FcRn KO
   theta[4] = 0.0;
 
-  halfl = halfl_fcrn(ts, theta);
+  halfl = halfl_fcrn(theta);
 
   halfl ~ normal(halflData[5], halflStd[5]);
 }
