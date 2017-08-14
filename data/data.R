@@ -22,6 +22,7 @@ runsample <- function(name) {
 	fit <- stan("model/diff.stan",
 		cores = parallel::detectCores(),
 		data = dataIn,
+		iter = 500,
 		chains = parallel::detectCores(),
 		verbose = T,
 		control = list(adapt_delta = 0.99));
