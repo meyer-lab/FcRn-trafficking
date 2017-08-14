@@ -31,20 +31,12 @@ functions {
     
     return(A);
   }
-  real halfl_fcrn(real[] th) {
-    vector[3] C_t0;
-    matrix[3, 3] A;
+  real halfl_fcrn(real[] th, matrix A, vector C_t0) {
     vector[3] interv; // Interval of halflives to look over
     
     interv[1] = 0; // Lower bound
     interv[2] = 1000; // Midpoint
     interv[3] = 2000; // Upper bound
-    
-    A = make_Matrix(th);
-    
-    C_t0[1] = 20.0; // TODO: What is the C0 concentration?
-    C_t0[2] = 0.0;
-    C_t0[3] = 0.0;
     
     // If we start out of bounds just return the upper bound
     if (fcrn_model(interv[3], A, C_t0) > C_t0[1]/2) {
@@ -97,6 +89,11 @@ transformed parameters {
 model {
   real theta[6];
   real halfl;
+  vector[3] C_t0;
+  
+  C_t0[1] = 20.0; // TODO: What is the C0 concentration?
+  C_t0[2] = 0.0;
+  C_t0[3] = 0.0;
 
   Vp ~ lognormal(0.0, 1.0);
   Q ~ lognormal(0.0, 1.0);
@@ -113,7 +110,7 @@ model {
   theta[6] = Vin;
   
   // Calculate data for wt condition
-  halfl = halfl_fcrn(theta);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
   halfl ~ normal(halflData[1], halflStd[1]);
 
@@ -121,7 +118,7 @@ model {
   // dhs recycles less than ls, so actual sorting is product
   theta[4] = actual_sortF_dhs;
   
-  halfl = halfl_fcrn(theta);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
   halfl ~ normal(halflData[2], halflStd[2]);
   
@@ -130,7 +127,7 @@ model {
   theta[4] = actual_sortF_ls;
   theta[5] = actual_release_ls;
   
-  halfl = halfl_fcrn(theta);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
   halfl ~ normal(halflData[3], halflStd[3]);
 
@@ -139,7 +136,7 @@ model {
   theta[4] = sortF_yte;
   theta[5] = releaseF_yte;
   
-  halfl = halfl_fcrn(theta);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
   halfl ~ normal(halflData[4], halflStd[4]);
 
@@ -147,7 +144,7 @@ model {
   // Calculate data for FcRn KO
   theta[4] = 0.0;
 
-  halfl = halfl_fcrn(theta);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
   halfl ~ normal(halflData[5], halflStd[5]);
 }
