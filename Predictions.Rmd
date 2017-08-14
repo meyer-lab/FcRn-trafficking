@@ -8,77 +8,22 @@ output: pdf_document
 ```{r setup, include=FALSE}
 library(dplyr)
 library(ggplot2)
-library(directlabels)
-library(scales)
 
-get_params <- function() {
-  load('model/diff_samples.rds')
-  
-  return(as.data.frame(rstan::extract(fit)))
-}
-
-halfl_fcrn <- function(th) {
-  fcrn_model <- function(t, state, parameters) {
-    with(as.list(c(state, parameters)), {
-      dCc = Q*Cp - Q*Cc
-      dCp = (Q*Cc - Q*Cp - Qu*Cp + Qu*Cin*sortF*releaseF)/Vp
-      dCin = Qu/Vin*(Cp + Cin*((1 - releaseF)*sortF - 1))
-      
-      list(c(dCc, dCp, dCin))
-    })
-  }
-  
-  C0 <- 20.0
-  
-  if (th['sortF']*th['releaseF'] < 0.4) {
-    ts <- seq_len(1000)
-  } else {
-    ts <- seq(0, 10000, length = 3000)
-  }
-  
-  odeSol <- deSolve::ode(y = c(Cc = C0, Cp = 0, Cin = 0),
-                         times = ts, func = fcrn_model, parms = th)
-  
-  return(approx(odeSol[,2], odeSol[,1], C0/2.0)$y)
-}
+source("model_code.R")
 ```
 
+## Scarlet
 
-sss
+```{r Scarlet, echo=FALSE}
+load('model/humanized_samples.rds')
 
-
-```{r}
-sorts <- expand.grid(id = 1,
-                     sortF = seq(0.7, 0.99, length.out = 30),
-                     releaseF = seq(0.5, 1, length.out = 20))
-
-output <- get_params() %>%
-  filter(lp__ == max(lp__)) %>%
-  mutate(id = 1) %>%
-  full_join(sorts, by = c("id")) %>%
-  select(Vp, Q, Qu, Vin, sortF, releaseF)
-
-# Run the predictions
-output$halfl <- apply(output, 1, halfl_fcrn)
+plot(plot_halfls(fit))
 ```
 
-## R Markdown
+## Hemizygous hFcRn transgenic mice
 
-Lastly, I've plotted the predicted half-life for a particular sorting and release fraction below, taking into account the uncertainty of the previous fitting. The plot shows the prediction's 50% and 80% prediction intervals.
+```{r Partial, echo=FALSE}
+load('model/diff_samples.rds')
 
-```{r pressure, echo=FALSE}
-e <- ggplot(output, aes(x = sortF, y = releaseF, z = halfl)) + 
-  geom_contour(aes(color = ..level..), breaks = c(72, 96, 200, 300, 400, 600, 1200)) +
-  theme_bw() + 
-  annotate("text", label = "o", x = 0.8, y = 0.99, color = "black") +
-  annotate("text", label = "o", x = 0.95, y = 0.73, color = "black") +
-  annotate("text", label = "o", x = 0.96, y = 0.76, color = "black") +
-  annotate("text", label = "o", x = 0.94, y = 0.99, color = "black") +
-  xlab("Endosomal Sorting Fraction") +
-  scale_x_continuous(trans = "atanh", limits = c(0.7, 0.99))
-
-e <- direct.label(e, "top.pieces")
-plot(e)
+plot(plot_halfls(fit))
 ```
-
-What this shows most clearly is that both parameters matter. As soon as you've optimized the endosomal sorting, surface release becomes a much more critical factor.
