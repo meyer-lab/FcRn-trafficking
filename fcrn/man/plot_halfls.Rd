@@ -4,7 +4,7 @@
 \alias{plot_halfls}
 \title{Title}
 \usage{
-plot_halfls(fit)
+plot_halfls(name)
 }
 \arguments{
 \item{fit}{The rstan fit object with all the samples.}

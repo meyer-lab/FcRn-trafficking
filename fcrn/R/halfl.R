@@ -42,15 +42,15 @@ halfl_fcrn <- function(th) {
 #' @return Nothing.
 #' @export
 runsample <- function(name) {
-  if (name == "diff") {
-    dataIn <- list(halflData = c(49.3, 335.9, 106.9, 204.3, 24), 
-                   halflStd = c(2.7, 14.9, 4.3, 5.2, 1.0))
+  if (name == "diff") {         # WT, DHS, LS, YTE
+    dataIn <- list(halflData = c(49.3, 335.9, 106.9, 204.3), 
+                   halflStd = c(2.7, 14.9, 4.3, 5.2))
   } else if (name == "scarlette") {
-    dataIn <- list(halflData = c(101.1, 323.0, 284.1, 294.7, 24),
-                   halflStd = c(11.4, 24.1, 9.7, 17.8, 1.0))
+    dataIn <- list(halflData = c(101.1, 323.0, 284.1, 294.7),
+                   halflStd = c(11.4, 24.1, 9.7, 17.8))
   } else if (name == "marlene") {
-    dataIn <- list(halflData = c(0, 0, 0, 0, 24),
-                   halflStd = c(0, 0, 0, 0, 1.0))
+    dataIn <- list(halflData = c(148.9, 417.9, 412.3, 359.9),
+                   halflStd = c(14.3, 24.0, 22.6, 30.5))
   }
   
   samples_filename <- paste(name, "samples.rds", sep = "_")
@@ -58,13 +58,35 @@ runsample <- function(name) {
   fit <- rstan::stan(system.file("extdata", "model.stan", package = "fcrn"),
                      cores = parallel::detectCores(),
                      data = dataIn,
-                     iter = 500,
+                     iter = 400,
                      save_dso = T,
                      chains = 4,
-                     verbose = T,
-                     control = list(adapt_delta = 0.99));
+                     control = list(adapt_delta = 0.99,
+                                    max_treedepth = 20));
   
-  save(fit, file = system.file("extdata", samples_filename, package = "fcrn"))
+  print(paste("Writing to: ", samples_filename, sep = ""))
+  
+  save(fit, file = samples_filename)
+}
+
+#' Run the sampling for all the in vivo models.
+#'
+#' @return Nothing.
+#' @export
+sampleAll <- function() {
+  runsample("diff")
+  
+  runsample("scarlette")
+  
+  runsample("marlene")
+}
+
+shinyModel <- function(name) {
+  samples_filename <- paste(name, "samples.rds", sep = "_")
+  
+  load(samples_filename)
+  
+  shinystan::launch_shinystan(fit)
 }
 
 
