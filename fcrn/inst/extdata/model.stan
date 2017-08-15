@@ -1,6 +1,16 @@
 functions {
-  real fcrn_model(real t, matrix A, vector C_t0) {
-    return (matrix_exp(t * A) * C_t0)[1];
+  vector fcrn_model(real t, matrix A, vector C_t0) {
+    vector[3] point;
+    vector[2] outt;
+    
+    // Solve the ODE
+    point = matrix_exp(t * A) * C_t0;
+    outt[1] = point[1] - C_t0[1]/2;
+    
+    // Find the derivative of the central concentration
+    outt[2] = (A * point)[1];
+    
+    return (outt);
   }
   matrix make_Matrix(real[] th) {
     real Cl;
@@ -32,31 +42,25 @@ functions {
     return(A);
   }
   real halfl_fcrn(real[] th, matrix A, vector C_t0) {
-    vector[3] interv; // Interval of halflives to look over
-    
-    interv[1] = 0; // Lower bound
-    interv[2] = 1000; // Midpoint
-    interv[3] = 2000; // Upper bound
-    
-    // If we start out of bounds just return the upper bound
-    if (fcrn_model(interv[3], A, C_t0) > C_t0[1]/2) {
-      return (interv[3]);
-    }
+    // Implements Newton's method to find the half-life
+    real t0;
+    real t1;
+    vector[2] y; // y and the derivative
+    real yprime;
+    t0 = 0;
     
     for (N in 1:100) {
-      if (fcrn_model(interv[2], A, C_t0) > C_t0[1]/2) {
-        interv[1] = interv[2];
-      } else {
-        interv[3] = interv[2];
+      y = fcrn_model(t0, A, C_t0);
+      
+      t1 = t0 - y[1]/y[2];
+      
+      if (fabs(t1 - t0) <= 1E-3 * fabs(t1)) {
+        return(t1);
       }
       
-      interv[2] = (interv[3] - interv[1])/2 + interv[1];
-      
-      if ((interv[3] - interv[1]) < 0.1) {
-        return(interv[2]);
-      }
+      t0 = t1;
     }
-
+    
     return 10000;
   }
 }
@@ -146,5 +150,5 @@ model {
 
   halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
-  halfl ~ normal(halflData[5], halflStd[5]);
+  halfl ~ normal(24.0, 1.0);
 }

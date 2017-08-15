@@ -6,23 +6,23 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-library(dplyr)
-library(ggplot2)
 library(fcrn)
 ```
 
-## Scarlet
+## Scarlette
 
-```{r Scarlet, echo=FALSE}
-load('model/humanized_samples.rds')
+```{r scarlette}
+plot_halfls("scarlette")
+```
 
-plot(plot_halfls(fit))
+## Marlene
+
+```{r marlene}
+plot_halfls("marlene")
 ```
 
 ## Hemizygous hFcRn transgenic mice
 
-```{r Partial, echo=FALSE}
-load('model/diff_samples.rds')
-
-plot(plot_halfls(fit))
+```{r diff}
+plot_halfls("diff")
 ```

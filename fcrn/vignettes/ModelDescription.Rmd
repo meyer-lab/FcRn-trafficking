@@ -3,12 +3,6 @@ title: "FcRn trafficking analysis"
 output: pdf_document
 ---
 
-```{r, message=TRUE, include=FALSE}
-library(rstan)
-library(magrittr)
-load('predictions.rds')
-```
-
 As we discussed, it's challenging to infer what the exact conditions of FcRn engagement are within the endosome and at the cell surface. I've therefore assembled a purely phenomenological trafficking model. This model doesn't directly employ the binding measurements to set the trafficking parameters. By comparing the results here to those binding measurements, however, we can come up with how they correspond.
 
 ![Model diagram](model/diagram.png "Model")\ 
