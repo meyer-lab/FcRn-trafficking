@@ -81,6 +81,12 @@ sampleAll <- function() {
   runsample("marlene")
 }
 
+#' Title
+#'
+#' @param name The name of the model to load.
+#'
+#' @return None
+#' @export
 shinyModel <- function(name) {
   samples_filename <- paste(name, "samples.rds", sep = "_")
   
@@ -92,12 +98,10 @@ shinyModel <- function(name) {
 
 #' Title
 #'
-#' @param name 
+#' @param name Name of the in vivo model fit to load.
 #'
-#' @return
+#' @return Loaded samples from a fit
 #' @export
-#'
-#' @examples
 loadsample <- function(name) {
   samples_filename <- paste(name, "samples.rds", sep = "_")
   

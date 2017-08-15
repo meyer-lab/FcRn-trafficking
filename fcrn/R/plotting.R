@@ -12,13 +12,16 @@ plot_halfls <- function(name) {
   output <- expand.grid(sortF = seq(0.5, 0.98, length.out = 50),
                         releaseF = seq(0.25, 1, length.out = 50))
   
-  output$Ve <- best_fit$Ve
+  output$Vin <- best_fit$Vin
+  output$Q <- best_fit$Q
+  output$Qu <- best_fit$Qu
+  output$Vp <- best_fit$Vp
   
   # Run the predictions
   output$halfl <- apply(output, 1, fcrn::halfl_fcrn)
   
-  e <- ggplot2::ggplot(output, ggplot2::aes_(x = 'sortF', y = 'releaseF', z = 'halfl')) + 
-    ggplot2::geom_contour(ggplot2::aes_(color = '..level..'), breaks = c(48, 72, 96, 200, 300, 400, 500, 700)) +
+  e <- ggplot2::ggplot(output, ggplot2::aes_(x = ~sortF, y = ~releaseF, z = ~halfl)) + 
+    ggplot2::geom_contour(ggplot2::aes_(color = ~..level..), breaks = c(48, 72, 96, 200, 300, 400, 500, 700)) +
     ggplot2::annotate("text", label = "WT", x = best_fit$actual_sortF_wt, y = 0.99, color = "black") +
     ggplot2::annotate("text", label = "DHS", x = best_fit$actual_sortF_dhs, y = 0.99, color = "black") +
     ggplot2::annotate("text", label = "LS", x = best_fit$actual_sortF_ls,
@@ -45,5 +48,7 @@ plot_halfls <- function(name) {
 #' @return Maximum likelihood point from sampling.
 getML <- function(fit) {
   best_fit <- as.data.frame(rstan::extract(fit)) %>%
-    dplyr::filter_('lp__' == max('lp__'))
+    dplyr::filter_('lp__ == max(lp__)')
+  
+  return(best_fit)
 }
