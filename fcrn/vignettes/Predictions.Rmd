@@ -8,8 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 library(dplyr)
 library(ggplot2)
-
-source("model_code.R")
+library(fcrn)
 ```
 
 ## Scarlet

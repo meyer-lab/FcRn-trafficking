@@ -1,4 +1,3 @@
 .Rproj.user
-*.nb.html
-model/diff.rds
 .Rhistory
+.RData
