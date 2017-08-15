@@ -1,0 +1,28 @@
+---
+title: "Predictions"
+author: "Aaron Meyer"
+date: "8/10/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(fcrn)
+```
+
+## Scarlet
+
+```{r Scarlet, echo=FALSE}
+load('model/humanized_samples.rds')
+
+plot(plot_halfls(fit))
+```
+
+## Hemizygous hFcRn transgenic mice
+
+```{r Partial, echo=FALSE}
+load('model/diff_samples.rds')
+
+plot(plot_halfls(fit))
+```

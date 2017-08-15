@@ -1,0 +1,45 @@
+---
+title: "FcRn trafficking analysis"
+output: pdf_document
+---
+
+```{r, message=TRUE, include=FALSE}
+library(rstan)
+library(magrittr)
+parrs <- c("Vp", "Qu", "Vin", "actual_sortF_wt",
+           "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
+           "actual_release_ls", "releaseF_yte")
+```
+
+This data was then fit to the PK studies data using `stan`. Rather than a local sensitivity analysis, I've employed Markov Chain Monte Carlo, which is a Bayesian approach that fully samples the model posterior. While computationally much more expensive, this provides the most rigorous confidence intervals for each parameter. I've included the overview output below which most importantly shows that the fitting process worked and came to convergence (e.g. Rhat < 1.1).
+
+```{r}
+load('model/diff_samples.rds')
+print(fit, pars = parrs, probs = c(0.025, 0.975))
+```
+
+Looking at the posterior confidence intervals:
+
+```{r, fig.height=4, fig.width=5}
+stan_plot(fit, pars = parrs)
+```
+
+
+These results provide a few observations: Changing the pH 5.8 affinity from 111 nM to 55 nM only corresponds to a small increase in IgG recycling. This is in contrast to the WT to DHS change of 550 nM to 111 nM where sorting is greatly affected.
+
+It makes sense that further affinity enrichment in the endosome should have diminishing returns with respect to the sorting fraction since a greater fraction of IgG becomes bound. Looking at the `sortF` parameters, this suggests the effective concentration of endosomal IgG is around 500 nM. Interpreting this as the actual endosomal concentration, though, would require assuming that the endosomal compartment comes to equilibrium.
+
+While we don't have an exact estimate for the amount of LS IgG recaptured, the 95% confidence bound is that it's greater than 30% (note: 1 - releaseF).
+
+Here are the results for the humanized model (Scarlett). The results are overall very similar, with some subtle shifts in the recapture amount (releaseF) and sorting. These subtle changes are sufficient to explain the differences between the two models.
+
+```{r}
+load('model/humanized_samples.rds')
+print(fit, pars = parrs, probs = c(0.025, 0.975))
+```
+
+Looking at the posterior confidence intervals:
+
+```{r, fig.height=4, fig.width=5}
+stan_plot(fit, pars = parrs)
+```
