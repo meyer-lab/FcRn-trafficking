@@ -4,11 +4,14 @@ pipeline {
     stage('Clean') {
       steps { sh 'git clean -ffdx' }
     }
+    stage('Test') {
+      steps {
+        sh 'make test'
+      }
+    }
     stage('Build') {
       steps {
         sh 'make -j 8 all'
-        archiveArtifacts artifacts: 'Analysis.pdf', onlyIfSuccessful: true
-        archiveArtifacts artifacts: 'ModelDescription.pdf', onlyIfSuccessful: true
       }
     }
   }
