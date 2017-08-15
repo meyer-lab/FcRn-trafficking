@@ -65,8 +65,8 @@ functions {
   }
 }
 data {
-  real halflData[5];
-  real halflStd[5];
+  real halflData[4];
+  real halflStd[4];
 }
 parameters {
   real<lower=0> Vp; // The volume of the periferal compartment
