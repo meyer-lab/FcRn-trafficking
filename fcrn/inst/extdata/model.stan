@@ -1,66 +1,72 @@
 functions {
-  // Precise method, which guarantees v = v1 when t = 1.
-  real lerp(real v0, real v1, real t) {
-    return (1 - t) * v0 + t * v1;
+  vector fcrn_model(real t, matrix A, vector C_t0) {
+    vector[3] point;
+    vector[2] outt;
+    
+    // Solve the ODE
+    point = matrix_exp(t * A) * C_t0;
+    outt[1] = point[1] - C_t0[1]/2;
+    
+    // Find the derivative of the central concentration
+    outt[2] = (A * point)[1];
+    
+    return (outt);
   }
-  real[] fcrn_model(real t, real[] C, real[] th, real[] x_r, int[] x_i) {
-    real dC_dt[3];
+  matrix make_Matrix(real[] th) {
     real Cl;
     real Q;
     real Qu;
     real sortF;
     real releaseF;
+    real Vp;
+    real Vin;
+    matrix[3, 3] A;
     
+    Vp = th[1]; // Peripheral volume
     Q = th[2]; // Flow exchange rate between compartments
     Qu = th[3]; // Flow uptake into cells
     sortF = th[4]; // Sorting fraction for recycling
     releaseF = th[5]; // Sorting fraction for release
-
-    // Cc, Cp, Cin
-    dC_dt[1] = (Q*C[2] - Q*C[1])/1.0; // Vc is 1, no nonspecific clearance
-    dC_dt[2] = (Q*C[1] - Q*C[2] - Qu*C[2] + Qu*C[3]*sortF*releaseF)/th[1]; // th[1] is Vp
-    dC_dt[3] = Qu/th[6]*(C[2] + C[3]*((1 - releaseF)*sortF - 1));
-    // th[6] is Vin
-
-    return dC_dt;
+    Vin = th[6]; // Endosomal volume
+    
+    A[1, 1] = -Q;
+    A[1, 2] = Q;
+    A[1, 3] = 0;
+    A[2, 1] = Q/Vp;
+    A[2, 2] = -(Q+Qu)/Vp;
+    A[2, 3] = Qu*sortF*releaseF/Vp;
+    A[3, 1] = 0;
+    A[3, 2] = Qu/Vin;
+    A[3, 3] = Qu*((1-releaseF)*sortF-1)/Vin;
+    
+    return(A);
   }
-  real halfl_fcrn(real[] ts, real[] th, real[] x_r, int[] x_i) {
-    real C_t0[3];
-    real C_hat[100, 3];
-    real C0;
-    real inter;
-
-    C0 = 20.0; // TODO: What is the C0 concentration?
-
-    C_t0[1] = C0;
-    C_t0[2] = 0.0;
-    C_t0[3] = 0.0;
-
-    C_hat = integrate_ode_bdf(fcrn_model, C_t0, 0.0, ts, th, x_r, x_i);
-
-    for (N in 2:size(ts)) {
-      if (C_hat[N, 1] < C0/2) {
-        // Find interpolation point
-        inter = (C0/2 - C_hat[N-1, 1]) / (C_hat[N, 1] - C_hat[N-1, 1]);
-
-        return lerp(ts[N-1], ts[N], inter);
+  real halfl_fcrn(real[] th, matrix A, vector C_t0) {
+    // Implements Newton's method to find the half-life
+    real t0;
+    real t1;
+    vector[2] y; // y and the derivative
+    real yprime;
+    t0 = 0;
+    
+    for (N in 1:100) {
+      y = fcrn_model(t0, A, C_t0);
+      
+      t1 = t0 - y[1]/y[2];
+      
+      if (fabs(t1 - t0) <= 1E-3 * fabs(t1)) {
+        return(t1);
       }
+      
+      t0 = t1;
     }
-
-    return max(ts);
+    
+    return 10000;
   }
 }
 data {
-  real ts[100];
-  real halflData[5];
-  real halflStd[5];
-}
-transformed data {
-  int x_i[1];
-  real x_r[1];
-
-  x_i[1] = 1;
-  x_r[1] = 0.0;
+  real halflData[4];
+  real halflStd[4];
 }
 parameters {
   real<lower=0> Vp; // The volume of the periferal compartment
@@ -87,6 +93,11 @@ transformed parameters {
 model {
   real theta[6];
   real halfl;
+  vector[3] C_t0;
+  
+  C_t0[1] = 20.0; // TODO: What is the C0 concentration?
+  C_t0[2] = 0.0;
+  C_t0[3] = 0.0;
 
   Vp ~ lognormal(0.0, 1.0);
   Q ~ lognormal(0.0, 1.0);
@@ -103,7 +114,7 @@ model {
   theta[6] = Vin;
   
   // Calculate data for wt condition
-  halfl = halfl_fcrn(ts, theta, x_r, x_i);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
   halfl ~ normal(halflData[1], halflStd[1]);
 
@@ -111,7 +122,7 @@ model {
   // dhs recycles less than ls, so actual sorting is product
   theta[4] = actual_sortF_dhs;
   
-  halfl = halfl_fcrn(ts, theta, x_r, x_i);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
   halfl ~ normal(halflData[2], halflStd[2]);
   
@@ -120,7 +131,7 @@ model {
   theta[4] = actual_sortF_ls;
   theta[5] = actual_release_ls;
   
-  halfl = halfl_fcrn(ts, theta, x_r, x_i);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
   halfl ~ normal(halflData[3], halflStd[3]);
 
@@ -129,7 +140,7 @@ model {
   theta[4] = sortF_yte;
   theta[5] = releaseF_yte;
   
-  halfl = halfl_fcrn(ts, theta, x_r, x_i);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
   halfl ~ normal(halflData[4], halflStd[4]);
 
@@ -137,7 +148,7 @@ model {
   // Calculate data for FcRn KO
   theta[4] = 0.0;
 
-  halfl = halfl_fcrn(ts, theta, x_r, x_i);
+  halfl = halfl_fcrn(theta, make_Matrix(theta), C_t0);
 
-  halfl ~ normal(halflData[5], halflStd[5]);
+  halfl ~ normal(24.0, 1.0);
 }

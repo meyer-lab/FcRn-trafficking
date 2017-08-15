@@ -4,6 +4,7 @@ output: pdf_document
 ---
 
 ```{r, message=TRUE, include=FALSE}
+library(fcrn)
 library(rstan)
 library(magrittr)
 parrs <- c("Vp", "Qu", "Vin", "actual_sortF_wt",
