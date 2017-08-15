@@ -3,10 +3,9 @@ context("Model construction")
 
 
 test_that("rstan can compile the model", {
-  skip("This takes a while.")
   file_path <- system.file("extdata", "model.stan", package = "fcrn")
   
-  output <- rstan::stan_model(file_path, auto_write = F, save_dso = F, verbose = F)
+  output <- rstan::stan_model(file_path, auto_write = T, save_dso = T, verbose = F)
   
   expect_is(output, "stanmodel")
 })

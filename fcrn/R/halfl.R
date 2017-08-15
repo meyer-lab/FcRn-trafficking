@@ -59,6 +59,7 @@ runsample <- function(name) {
                      cores = parallel::detectCores(),
                      data = dataIn,
                      iter = 500,
+                     save_dso = T,
                      chains = 4,
                      verbose = T,
                      control = list(adapt_delta = 0.99));
