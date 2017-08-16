@@ -4,10 +4,15 @@
 \alias{loadsample}
 \title{Title}
 \usage{
-loadsample(name)
+loadsample(name, as.df = F)
 }
 \arguments{
-\item{name}{}
+\item{name}{Name of the in vivo model fit to load.}
+
+\item{as.df}{Do you want the return to be a data.frame?}
+}
+\value{
+Loaded samples from a fit
 }
 \description{
 Title

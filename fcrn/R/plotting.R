@@ -52,3 +52,57 @@ getML <- function(fit) {
   
   return(best_fit)
 }
+
+
+
+#' Produce a plot showing the posteriors for each sorting function across the in vivo models.
+#'
+#' @return Plot object
+#' @export
+getSortingPosterior <- function() {
+  
+  loadData <- function(name) {
+    data <-  as.data.frame(summary(loadsample(name))$summary)
+    data$param <- row.names(data)
+    data$model <- factor(name)
+    return(data)
+  }
+  
+  all <- rbind(loadData("scarlette"),
+               loadData("diff"),
+               loadData("marlene"))
+  
+  assertthat::assert_that(max(all$Rhat) < 1.1)
+  assertthat::assert_that(min(all$n_eff) > 100)
+  
+  all <- dplyr::select_(all, '-mean', '-se_mean', '-sd', '-n_eff', '-Rhat') %>%
+    dplyr::mutate(param = as.factor(param)) %>%
+    dplyr::filter(param != "lp__") %>%
+    dplyr::filter(param != "sortF_wt") %>%
+    dplyr::filter(param != "sortF_dhs") %>%
+    dplyr::filter(param != "sortF_ls") %>%
+    dplyr::filter(param != "releaseF_ls")
+  
+  sorts <- all %>%
+    dplyr::filter(!(param == "Q" | param == "Qu" | param == "Vin" | param == "Vp")) %>%
+    dplyr::mutate(param = gsub("actual_", "", param)) %>%
+    dplyr::mutate(param = gsub("release_", "releaseF_", param)) %>%
+    tidyr::separate(param, into = c("params", "IgG"), sep = "_") %>%
+    reshape2::melt(id.vars = c("params", "IgG", "model"), variable.name = "quantile") %>%
+    reshape2::dcast(IgG + model ~ params + quantile, value.var = "value")
+  
+  sorts[is.na(sorts)] <- 1.0
+  
+  g <- ggplot2::ggplot(sorts, ggplot2::aes_(x = 'sortF_50%', y = 'releaseF_50%', color = 'IgG')) +
+    ggplot2::geom_point() +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
+    ggplot2::facet_wrap(~model) +
+    ggplot2::scale_x_continuous(limits = c(0, 1)) +
+    ggplot2::coord_equal() +
+    ggplot2::geom_errorbar(ggplot2::aes_(ymin = 'releaseF_2.5%', ymax = 'releaseF_97.5%')) +
+    ggplot2::geom_errorbarh(ggplot2::aes_(xmin = 'sortF_2.5%', xmax = 'sortF_97.5%')) +
+    ggplot2::xlab("Endosomal Sorting Fraction") +
+    ggplot2::ylab("Surface Release Fraction")
+  
+  return(g)
+}

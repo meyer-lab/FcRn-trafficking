@@ -31,6 +31,8 @@ halfl_fcrn <- function(th) {
   return(outt$root)
 }
 
+models <- c("diff", "scarlette", "marlene")
+
 #' Title
 #' 
 #' TODO: Spread data is stdev — check this is right
@@ -90,7 +92,9 @@ sampleAll <- function() {
 shinyModel <- function(name) {
   samples_filename <- paste(name, "samples.rds", sep = "_")
   
-  load(samples_filename)
+  samples_path <- system.file("extdata", samples_filename, package = "fcrn")
+  
+  load(samples_path)
   
   shinystan::launch_shinystan(fit)
 }
@@ -99,15 +103,20 @@ shinyModel <- function(name) {
 #' Title
 #'
 #' @param name Name of the in vivo model fit to load.
+#' @param as.df Do you want the return to be a data.frame?
 #'
 #' @return Loaded samples from a fit
 #' @export
-loadsample <- function(name) {
+loadsample <- function(name, as.df = F) {
   samples_filename <- paste(name, "samples.rds", sep = "_")
   
   samples_path <- system.file("extdata", samples_filename, package = "fcrn")
   
   load(samples_path)
   
-  return(fit)
+  if (as.df) {
+    return(as.data.frame(rstan::extract(fit)))
+  } else {
+    return(fit)
+  }
 }
