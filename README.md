@@ -17,3 +17,10 @@ PK data from Scarlet and Marlene can change slightly because we added more N for
 4. 18th slide contains the plots in several mice.
 
 If you have any questions, please let me know it.
+
+## Figure notes
+
+Current version looks great to me ! 
+I agree with your opinion. To help reader's understanding, we had better include visual model scheme in the figure. If you want to assemble figures by yourself, here are the NPG instructions, 1. Width: 7 in for double column, 3.5 in for one column. 2. Font: Sans Serif (or Microsoft Sans Serif). 3. Each axis should start from 0. So we need to use axis breaks. 
+
+Except #3, you don't need to follow it. After getting the PDF version of figures, I will slightly edit them for unifying the figure styles (fonts size, colors and etc). 
