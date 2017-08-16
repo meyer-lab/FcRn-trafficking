@@ -14,4 +14,8 @@ Imports:
   directlabels,
   stats,
   ggplot2,
-  dplyr
+  dplyr,
+  shinystan,
+  assertthat,
+  reshape2,
+  tidyr

@@ -3,44 +3,49 @@ title: "FcRn trafficking analysis"
 output: pdf_document
 ---
 
-```{r, message=TRUE, include=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library(fcrn)
 library(rstan)
 library(magrittr)
-parrs <- c("Vp", "Qu", "Vin", "actual_sortF_wt",
-           "actual_sortF_dhs", "actual_sortF_ls", "sortF_yte",
-           "actual_release_ls", "releaseF_yte")
-```
+library(dplyr)
+library(cowplot)
 
-This data was then fit to the PK studies data using `stan`. Rather than a local sensitivity analysis, I've employed Markov Chain Monte Carlo, which is a Bayesian approach that fully samples the model posterior. While computationally much more expensive, this provides the most rigorous confidence intervals for each parameter. I've included the overview output below which most importantly shows that the fitting process worked and came to convergence (e.g. Rhat < 1.1).
+scarlette <-  as.data.frame(summary(loadsample("scarlette"))$summary)
+scarlette$param <- row.names(scarlette)
+scarlette$model <- factor("scarlette")
+
+diff <-  as.data.frame(summary(loadsample("diff"))$summary)
+diff$param <- row.names(diff)
+diff$model <- factor("diff")
+
+marlene <-  as.data.frame(summary(loadsample("marlene"))$summary)
+marlene$param <- row.names(marlene)
+marlene$model <- factor("marlene")
+
+all <- rbind(scarlette, marlene, diff)
+rm(diff)
+rm(marlene)
+rm(scarlette)
+
+
+assertthat::assert_that(max(all$Rhat) < 1.1)
+assertthat::assert_that(min(all$n_eff) > 100)
+
+all %<>% select(-mean, -se_mean, -sd, -n_eff, -Rhat) %>%
+  mutate(param = as.factor(param)) %>%
+  filter(param != "lp__") %>%
+  filter(param != "sortF_wt") %>%
+  filter(param != "sortF_dhs") %>%
+  filter(param != "sortF_ls") %>%
+  filter(param != "releaseF_ls")
+```
+X
 
 ```{r}
-load('model/diff_samples.rds')
-print(fit, pars = parrs, probs = c(0.025, 0.975))
-```
+globs <- all %>% filter(param == "Q" | param == "Qu" | param == "Vin" | param == "Vp")
 
-Looking at the posterior confidence intervals:
-
-```{r, fig.height=4, fig.width=5}
-stan_plot(fit, pars = parrs)
+ggplot(globs, aes(x = interaction(model, param), y = `50%`, color = model)) + geom_point() +
+  geom_errorbar(aes(ymin = `25%`, ymax = `75%`)) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 
-These results provide a few observations: Changing the pH 5.8 affinity from 111 nM to 55 nM only corresponds to a small increase in IgG recycling. This is in contrast to the WT to DHS change of 550 nM to 111 nM where sorting is greatly affected.
-
-It makes sense that further affinity enrichment in the endosome should have diminishing returns with respect to the sorting fraction since a greater fraction of IgG becomes bound. Looking at the `sortF` parameters, this suggests the effective concentration of endosomal IgG is around 500 nM. Interpreting this as the actual endosomal concentration, though, would require assuming that the endosomal compartment comes to equilibrium.
-
-While we don't have an exact estimate for the amount of LS IgG recaptured, the 95% confidence bound is that it's greater than 30% (note: 1 - releaseF).
-
-Here are the results for the humanized model (Scarlett). The results are overall very similar, with some subtle shifts in the recapture amount (releaseF) and sorting. These subtle changes are sufficient to explain the differences between the two models.
-
-```{r}
-load('model/humanized_samples.rds')
-print(fit, pars = parrs, probs = c(0.025, 0.975))
-```
-
-Looking at the posterior confidence intervals:
-
-```{r, fig.height=4, fig.width=5}
-stan_plot(fit, pars = parrs)
-```
