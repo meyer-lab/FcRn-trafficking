@@ -5,7 +5,10 @@ pipeline {
       steps { sh 'git clean -ffdx' }
     }
     stage('Setup Environment') {
-      steps { sh 'R -e \"source(\'packrat/init.R\')\"' }
+      steps {
+        sh 'R -e \"source(\'packrat/init.R\')\"'
+        sh 'R -e \"packrat::on()\"'
+      }
     }
     stage('Test') {
       steps {
