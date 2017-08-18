@@ -6,13 +6,12 @@ pipeline {
     }
     stage('Setup Environment') {
       steps {
-        sh 'R -e \"source(\'packrat/init.R\')\"'
-        sh 'R -e \"packrat::on()\"'
+        sh 'Rscript -e \"source(\'packrat/init.R\')\"'
       }
     }
     stage('Test') {
       steps {
-        sh 'R -e \"library(methods); devtools::test(\'./fcrn\')\"'
+        sh 'Rscript --default-packages=methods -e \"devtools::test(\'./fcrn\')\"'
       }
     }
     stage('Build') {
