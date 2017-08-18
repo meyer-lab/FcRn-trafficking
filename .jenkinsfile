@@ -4,14 +4,17 @@ pipeline {
     stage('Clean') {
       steps { sh 'git clean -ffdx' }
     }
+    stage('Setup Environment') {
+      steps { sh 'R -e "source(\'packrat/init.R\')"' }
+    }
     stage('Test') {
       steps {
-        sh 'make test'
+        sh 'R -e "library(methods); devtools::test(\'./fcrn\')"'
       }
     }
     stage('Build') {
       steps {
-        sh 'make -j 8 all'
+        sh 'echo Build'
       }
     }
   }
