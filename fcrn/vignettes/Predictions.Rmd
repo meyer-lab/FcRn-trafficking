@@ -26,3 +26,14 @@ plot_halfls("marlene")
 ```{r diff}
 plot_halfls("diff")
 ```
+
+
+
+
+```{r}
+library(fcrn)
+library(cowplot)
+
+plot_grid(plot_halfls("diff"), getSortingPosterior(), ncol = 2)
+```
+
