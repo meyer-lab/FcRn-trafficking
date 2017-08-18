@@ -18,4 +18,5 @@ Imports:
   shinystan,
   assertthat,
   reshape2,
-  tidyr
+  tidyr,
+  cowplot
