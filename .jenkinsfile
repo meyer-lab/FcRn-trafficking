@@ -4,12 +4,6 @@ pipeline {
     stage('Clean') {
       steps { sh 'git clean -ffdx' }
     }
-    stage('Setup Environment') {
-      steps {
-        sh 'R -e \"options(repos=structure(c(CRAN=\'http://cran.us.r-project.org\')))\"'
-        sh 'R -e \"install.packages(\'packrat\'); packrat::restore()\"'
-      }
-    }
     stage('Test') {
       steps {
         sh 'Rscript --default-packages=methods -e \"devtools::test(\'./fcrn\')\"'
