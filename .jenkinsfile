@@ -6,7 +6,7 @@ pipeline {
     }
     stage('Setup Environment') {
       steps {
-        sh 'Rscript -e \"source(\'packrat/init.R\')\"'
+        sh 'R -e \"install.packages(\'packrat\'); packrat::restore()\"'
       }
     }
     stage('Test') {
