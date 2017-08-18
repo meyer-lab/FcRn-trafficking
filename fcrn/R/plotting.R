@@ -1,4 +1,4 @@
-globalVariables("%>%")
+#' importFrom magrittr "%>%"
 
 #' Title
 #'
@@ -54,26 +54,13 @@ getML <- function(fit) {
 }
 
 
-
 #' Produce a plot showing the posteriors for each sorting function across the in vivo models.
 #'
 #' @return Plot object
 #' @export
 getSortingPosterior <- function() {
-  
-  loadData <- function(name) {
-    data <-  as.data.frame(summary(loadsample(name))$summary)
-    data$param <- row.names(data)
-    data$model <- factor(name)
-    return(data)
-  }
-  
-  all <- rbind(loadData("scarlette"),
-               loadData("diff"),
-               loadData("marlene"))
-  
-  assertthat::assert_that(max(all$Rhat) < 1.1)
-  assertthat::assert_that(min(all$n_eff) > 100)
+  # Load all the sampling data
+  all <- loadAll()
   
   all <- dplyr::select_(all, '-mean', '-se_mean', '-sd', '-n_eff', '-Rhat') %>%
     dplyr::mutate(param = as.factor(param)) %>%
