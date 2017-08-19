@@ -11,7 +11,12 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh 'echo Build'
+        sh 'R -e \"devtools::load_all(\'fcrn\'); fcrn::full_plot()\"'
+      }
+    }
+    stage('Report') {
+      steps {
+        archiveArtifacts artifacts: 'Output.pdf', onlyIfSuccessful: true
       }
     }
   }

@@ -95,3 +95,27 @@ getSortingPosterior <- function() {
   
   return(g)
 }
+
+
+
+#' Title
+#'
+#' @param save Boolean for whether this should save a PDF of the figure.
+#'
+#' @return Object with all the plots assembled.
+#' @export
+full_plot <- function(save = T) {
+  gg <- cowplot::ggdraw() +
+    cowplot::draw_plot(getSortingPosterior(), 0.4, 0.5, 1, 1) +
+    cowplot::draw_plot(plot_halfls("diff"), 0.0, 0.0, 0.3, 0.3)
+  
+  if (save) {
+    cowplot::save_plot(filename = "output.pdf",
+                       plot = gg,
+                       ncol = 1,
+                       base_width = 7,
+                       base_height = 4)
+  }
+  
+  return(gg)
+}

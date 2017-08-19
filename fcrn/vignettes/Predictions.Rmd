@@ -7,21 +7,14 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 library(fcrn)
-```
-
-
-```{r}
-getSortingPosterior()
-```
-
-
-
-```{r}
-library(fcrn)
+library(dplyr)
 library(cowplot)
+```
 
-ggdraw() + draw_plot(getSortingPosterior(), 0.4, 0.5, 1, 1) +
-  draw_plot(plot_halfls("diff"), 0.0, 0.0, 0.3, 0.3)
+A
+
+```{r}
+fcrn::full_plot()
 ```
 
 
