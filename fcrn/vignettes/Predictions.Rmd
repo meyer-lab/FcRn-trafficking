@@ -9,24 +9,10 @@ output: pdf_document
 library(fcrn)
 ```
 
-## Scarlette
 
-```{r scarlette}
-plot_halfls("scarlette")
+```{r}
+getSortingPosterior()
 ```
-
-## Marlene
-
-```{r marlene}
-plot_halfls("marlene")
-```
-
-## Hemizygous hFcRn transgenic mice
-
-```{r diff}
-plot_halfls("diff")
-```
-
 
 
 
@@ -34,6 +20,8 @@ plot_halfls("diff")
 library(fcrn)
 library(cowplot)
 
-plot_grid(plot_halfls("diff"), getSortingPosterior(), ncol = 2)
+ggdraw() + draw_plot(getSortingPosterior(), 0.4, 0.5, 1, 1) +
+  draw_plot(plot_halfls("diff"), 0.0, 0.0, 0.3, 0.3)
 ```
+
 
