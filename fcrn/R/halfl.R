@@ -120,3 +120,27 @@ loadsample <- function(name, as.df = F) {
     return(fit)
   }
 }
+
+
+
+
+#' Title
+#'
+#' @return Return all the sampling across models
+#' @export
+loadAll <- function() {
+  loadData <- function(name) {
+    data <- as.data.frame(rstan::summary(loadsample(name))$summary)
+    data$param <- row.names(data)
+    data$model <- factor(name)
+    return(data)
+  }
+  
+  all <- rbind(loadData("scarlette"), loadData("diff"), loadData("marlene"))
+  
+  assertthat::assert_that(max(all$Rhat) < 1.1)
+  assertthat::assert_that(min(all$n_eff) > 100)
+  
+  return(all)
+}
+

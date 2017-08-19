@@ -2,6 +2,7 @@
 
 export(getSortingPosterior)
 export(halfl_fcrn)
+export(loadAll)
 export(loadsample)
 export(plot_halfls)
 export(runsample)
