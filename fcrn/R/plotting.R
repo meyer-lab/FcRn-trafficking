@@ -1,5 +1,3 @@
-#' importFrom magrittr "%>%"
-
 #' Title
 #'
 #' @param fit The rstan fit object with all the samples.
@@ -40,6 +38,21 @@ plot_halfls <- function(name) {
   return(e)
 }
 
+#' Title
+#'
+#' @return ggplot object of plot.
+#' @export
+plot_otherPs <- function() {
+  globs <- dplyr::mutate(loadAll(), param = as.factor(param)) %>%
+    dplyr::filter(param == "Q" | param == "Qu" | param == "Vin" | param == "Vp")
+  
+  gg <- ggplot2::ggplot(globs, ggplot2::aes_(x = interaction(model, param), y = ~`50%`, color = ~`model`)) +
+    ggplot2::geom_point() +
+    ggplot2::geom_errorbar(aes(ymin = `25%`, ymax = `75%`)) +
+    ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  return(gg)
+}
 
 #' Title
 #'
