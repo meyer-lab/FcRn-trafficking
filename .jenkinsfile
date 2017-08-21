@@ -18,6 +18,16 @@ pipeline {
     stage('Report') {
       steps {
         archiveArtifacts artifacts: 'output.pdf', onlyIfSuccessful: true
+        step([
+          $class: 'CoberturaPublisher',
+          autoUpdateHealth: true,
+          autoUpdateStability: true,
+          coberturaReportFile: 'coverage.xml',
+          failNoReports: true,
+          failUnhealthy: true,
+          failUnstable: true,
+          sourceEncoding: 'UTF_8',
+          zoomCoverageChart: true])
       }
     }
   }
