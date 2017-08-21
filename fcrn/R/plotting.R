@@ -47,7 +47,7 @@ plot_otherPs <- function() {
   globs <- dplyr::mutate_(loadAll(), 'param = as.factor(param)') %>%
     dplyr::filter(param == "Q" | param == "Qu" | param == "Vin" | param == "Vp")
   
-  gg <- ggplot2::ggplot(globs, ggplot2::aes_(x = ~`interaction(model, param)`, y = ~`50%`, color = ~`model`)) +
+  gg <- ggplot2::ggplot(globs, ggplot2::aes_(x = ~interaction(model, param), y = ~`50%`, color = ~`model`)) +
     ggplot2::geom_point() +
     ggplot2::geom_errorbar(ggplot2::aes_(ymin = ~`25%`, ymax = ~`75%`)) +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
