@@ -30,7 +30,7 @@ plot_halfls <- function(name) {
     ggplot2::ylab("Fraction Released at Surface") +
     ggplot2::scale_x_continuous(trans = "atanh",
                                 limits = c(0.5, 0.98),
-                                breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.96, 0.97, 0.98)) +
+                                breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.97, 0.98)) +
     ggplot2::scale_colour_gradient(low = "gray", high = "gray") +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
   
