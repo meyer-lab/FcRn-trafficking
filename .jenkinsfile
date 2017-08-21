@@ -22,7 +22,7 @@ pipeline {
           $class: 'CoberturaPublisher',
           autoUpdateHealth: true,
           autoUpdateStability: true,
-          coberturaReportFile: 'coverage.xml',
+          coberturaReportFile: 'cobertura.xml',
           failNoReports: true,
           failUnhealthy: true,
           failUnstable: true,
