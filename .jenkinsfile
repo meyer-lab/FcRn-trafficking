@@ -6,7 +6,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh 'Rscript --default-packages=methods -e \"devtools::test(\'./fcrn\')\"'
+        sh 'Rscript -e \"covr::to_cobertura(covr::package_coverage(\'./fcrn\', quiet = F))\"'
       }
     }
     stage('Build') {
@@ -18,6 +18,16 @@ pipeline {
     stage('Report') {
       steps {
         archiveArtifacts artifacts: 'output.pdf', onlyIfSuccessful: true
+        step([
+          $class: 'CoberturaPublisher',
+          autoUpdateHealth: true,
+          autoUpdateStability: true,
+          coberturaReportFile: 'cobertura.xml',
+          failNoReports: true,
+          failUnhealthy: true,
+          failUnstable: true,
+          sourceEncoding: 'UTF_8',
+          zoomCoverageChart: true])
       }
     }
   }

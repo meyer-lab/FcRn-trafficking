@@ -1,7 +1,7 @@
 Package: fcrn
-Title: What the Package Does (one line, title case)
+Title: Model of IgG Trafficking
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Authors@R: person("Aaron", "Meyer", email = "a@asmlab.org", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: R (>= 3.3.2)
 License: MIT + file LICENSE
@@ -19,4 +19,5 @@ Imports:
   assertthat,
   reshape2,
   tidyr,
-  cowplot
+  cowplot,
+  magrittr

@@ -2,7 +2,7 @@
 % Please edit documentation in R/halfl.R
 \name{halfl_fcrn}
 \alias{halfl_fcrn}
-\title{Title}
+\title{Solves for the model half-life given a list of paraemeters.}
 \usage{
 halfl_fcrn(th)
 }
@@ -13,5 +13,5 @@ halfl_fcrn(th)
 The half-life given this parameter set.
 }
 \description{
-Title
+Solves for the model half-life given a list of paraemeters.
 }
