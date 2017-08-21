@@ -123,9 +123,9 @@ full_plot <- function(save = T) {
   gg <- cowplot::ggdraw() +
     cowplot::draw_plot(plot_otherPs(), 0.33, 0.5, 0.3, 0.45) +
     cowplot::draw_plot(getSortingPosterior(), 0.66, 0.5, 0.3, 0.45) +
-    cowplot::draw_plot(plot_halfls("diff"), 0.0, 0.0, 0.3, 0.45) +
-    cowplot::draw_plot(plot_halfls("marlene"), 0.33, 0.0, 0.3, 0.45) +
-    cowplot::draw_plot(plot_halfls("scarlette"), 0.66, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("diff"), 0.04, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("marlene"), 0.37, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("scarlette"), 0.7, 0.0, 0.3, 0.45) +
     cowplot::draw_plot_label(label = c("A", "B", "C", "D", "E", "F"),
                              size = 15,
                              x = c(0, 0.33, 0.66, 0, 0.33, 0.66),
