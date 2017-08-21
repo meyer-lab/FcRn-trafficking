@@ -2,7 +2,7 @@
 % Please edit documentation in R/halfl.R
 \name{jacFunc}
 \alias{jacFunc}
-\title{Title}
+\title{Builds the jacobian of the ODE model.}
 \usage{
 jacFunc(p)
 }
@@ -13,5 +13,5 @@ jacFunc(p)
 Jacobian of the ODE system.
 }
 \description{
-Title
+Builds the jacobian of the ODE model.
 }

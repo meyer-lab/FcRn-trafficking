@@ -43,7 +43,7 @@ plot_halfls <- function(name) {
 #' @return ggplot object of plot.
 #' @export
 plot_otherPs <- function() {
-  globs <- dplyr::mutate(loadAll(), param = as.factor(param)) %>%
+  globs <- dplyr::mutate_(loadAll(), 'param = as.factor(param)') %>%
     dplyr::filter(param == "Q" | param == "Qu" | param == "Vin" | param == "Vp")
   
   gg <- ggplot2::ggplot(globs, ggplot2::aes_(x = interaction(model, param), y = ~`50%`, color = ~`model`)) +
