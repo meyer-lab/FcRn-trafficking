@@ -121,7 +121,8 @@ full_plot <- function(save = T) {
   ggplot2::theme_set(cowplot::theme_cowplot(font_size = 8))
   
   gg <- cowplot::ggdraw() +
-    cowplot::draw_plot(getSortingPosterior(), 0.4, 0.5, 1, 1) +
+    cowplot::draw_plot(plot_otherPs(), 0.33, 0.5, 0.3, 0.45) +
+    cowplot::draw_plot(getSortingPosterior(), 0.66, 0.5, 0.3, 0.45) +
     cowplot::draw_plot(plot_halfls("diff"), 0.0, 0.0, 0.3, 0.45) +
     cowplot::draw_plot(plot_halfls("marlene"), 0.33, 0.0, 0.3, 0.45) +
     cowplot::draw_plot(plot_halfls("scarlette"), 0.66, 0.0, 0.3, 0.45) +
