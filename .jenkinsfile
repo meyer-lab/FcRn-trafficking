@@ -17,7 +17,7 @@ pipeline {
     }
     stage('Report') {
       steps {
-        archiveArtifacts artifacts: 'Output.pdf', onlyIfSuccessful: true
+        archiveArtifacts artifacts: 'output.pdf', onlyIfSuccessful: true
       }
     }
   }
