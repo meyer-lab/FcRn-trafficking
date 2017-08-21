@@ -1,5 +1,5 @@
 
-#' Title
+#' Builds the jacobian of the ODE model.
 #'
 #' @param p List of parameters with which to solve.
 #'
@@ -13,7 +13,7 @@ jacFunc <- function(p) {
   })
 }
 
-#' Title
+#' Solves for the model half-life given a list of paraemeters.
 #'
 #' @param th List of parameters with which to solve.
 #'
