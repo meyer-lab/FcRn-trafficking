@@ -118,7 +118,7 @@ getSortingPosterior <- function() {
 #' @return Object with all the plots assembled.
 #' @export
 full_plot <- function(save = T) {
-  ggplot2::theme_set(cowplot::theme_cowplot(font_size = 10))
+  ggplot2::theme_set(cowplot::theme_cowplot(font_size = 8))
   
   gg <- cowplot::ggdraw() +
     cowplot::draw_plot(getSortingPosterior(), 0.4, 0.5, 1, 1) +

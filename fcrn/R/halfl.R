@@ -34,9 +34,6 @@ halfl_fcrn <- function(th) {
 models <- c("diff", "scarlette", "marlene")
 
 #' Title
-#' 
-#' TODO: Spread data is stdev — check this is right
-#' TODO: Need values for FcRn KO
 #'
 #' @param name Name of the in vivo model to use.
 #' @export
