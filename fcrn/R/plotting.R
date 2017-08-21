@@ -34,7 +34,7 @@ plot_halfls <- function(name) {
     ggplot2::scale_colour_gradient(low = "gray", high = "gray") +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
   
-  e <- directlabels::direct.label(e, list(method = "top.pieces", fontsize = 1))
+  e <- directlabels::direct.label(e, "top.pieces")
   
   return(e)
 }
