@@ -6,7 +6,7 @@ TODO: Need values for FcRn KO
 
 ## Caption
 
-**Figure TODO. The relative half-lives of each IgG mutant can be explained through a model of endosomal sorting and release.** A) Graphical representation of the IgG endosomal sorting model. B) Posterior distributions of each volume and transport model. C) Endosomal and surface sorting parameters for each *in vivo* model. D) Predicted half-life of IgG with the specified endosomal (x) and surface (y) sorting fractions based on the fit model. E) Identical prediction to (D) for TODO: Marlene. F) Identical prediction to (D) for TODO: Scarlette.
+**Figure 4. The relative half-lives of each IgG mutant can be explained through a model of endosomal sorting and release.** A) Graphical representation of the IgG endosomal sorting model. B) Posterior distributions of each volume and transport model. C) Endosomal and surface sorting parameters for each *in vivo* model. D) Predicted half-life of IgG with the specified endosomal (x) and surface (y) sorting fractions based on the fit model. E) Identical prediction to (D) for TODO: Marlene. F) Identical prediction to (D) for TODO: Scarlette.
 
 ## Methods
 
@@ -30,12 +30,8 @@ $f_{sort}$ indicates the fraction of endosomal IgG that is recycled, and $f_{rel
 $$ \frac{\delta C_e}{\delta t} V_e = Q_u \bigg(C_p + C_e \Big((1 - f_{release}) f_{sort} - 1\Big)\bigg) $$
 
 
-
+Implicit in this model are a few assumptions: First, there is no clearance outside of cellular uptake and lysosomal degradation. Each sorting fraction and model parameter is assumed to not vary with the concentration of exogenous IgG, therefore assuming that the modeled processes are not saturatable. Finally, sorting and release are assumed to vary in the same order as their measured affinities at pH 5.8 and 7.4, with IgG of no measurable affinity at 7.4 fully released ($f_{release} = 1$).
 
 As the model jacobian was invariant with respect to the IgG concentrations, the ODE model was solved through the matrix exponential of the jacobian. The half-life was found through root finding with either the Brent routine or Newton's method.
 
-
-
-## Notes
-
-I've made a couple assumptions here for the sake of modeling: That there is no nonspecific clearance—i.e. that the only clearance is through cell uptake and failed recycling. Relaxing this is possible and wouldn't change the results very much. All the volumes are scaled to the central compartment volume, but this doesn't change the results outside of the units. Recycling versus endosomal degradation is assumed to occur according to a sorting parameter `sortF`. Inherent in this is the assumption that FcRn-mediated recycling is not saturated by the experiment. Including saturation is feasible but would make the model considerably more complex. Release or recapture is partitioned through another parameter `releaseF`, and recycled IgG that is not released ends up back in the endosome. Finally, sorting and release are assumed to vary in the same order as their affinities—i.e. recycling of the pH 5.8 higher affinity IgG is assumed to be greater than the lower affinity one. IgG with no measurable pH 7.4 affinity is assumed to be fully released.
+Model fitting was performed using Markov Chain Monte Carlo within Stan (CITE). Priors on $V_p$, $Q$, and $V_in$ were all specified as log-normal distributions with a mean and deviation of 1 in their respective units. The prior for $Q_u$ was specified as a log-normal distribution with mean $e^{0.1}$ and deviation of 0.5. Sorting parameter priors were specified to be flat, and in the order dictated by their relative affinity measurements. For example, if species A had a higher endosomal affinity than B, then $f_{sort,A}$ was given an even prior from 0 to 1, and $f_{sort,B}$ was given an even prior from 0 to $f_{sort,A}$.
