@@ -13,3 +13,9 @@ test_that("We get a plot from plot_halfls", {
   
   expect_is(outt, "ggplot")
 })
+
+test_that("We get a plot from plot_otherPs", {
+  outt <- plot_otherPs()
+  
+  expect_is(outt, "ggplot")
+})
