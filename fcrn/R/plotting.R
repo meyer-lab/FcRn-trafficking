@@ -118,9 +118,17 @@ getSortingPosterior <- function() {
 #' @return Object with all the plots assembled.
 #' @export
 full_plot <- function(save = T) {
+  ggplot2::theme_set(cowplot::theme_cowplot(font_size = 10))
+  
   gg <- cowplot::ggdraw() +
     cowplot::draw_plot(getSortingPosterior(), 0.4, 0.5, 1, 1) +
-    cowplot::draw_plot(plot_halfls("diff"), 0.0, 0.0, 0.3, 0.3)
+    cowplot::draw_plot(plot_halfls("diff"), 0.0, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("marlene"), 0.33, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("scarlette"), 0.66, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot_label(label = c("A", "B", "C", "D", "E", "F"),
+                             size = 15,
+                             x = c(0, 0.33, 0.66, 0, 0.33, 0.66),
+                             y = c(1, 1, 1, 0.5, 0.5, 0.5))
   
   if (save) {
     cowplot::save_plot(filename = "output.pdf",
