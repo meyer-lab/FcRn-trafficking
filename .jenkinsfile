@@ -11,12 +11,13 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh 'R -e \"devtools::load_all(\'fcrn\'); fcrn::full_plot()\"'
+        sh 'R CMD INSTALL --no-multiarch --with-keep.source fcrn'
+        sh 'R -e \"library(fcrn); fcrn::full_plot()\"'
       }
     }
     stage('Report') {
       steps {
-        archiveArtifacts artifacts: 'Output.pdf', onlyIfSuccessful: true
+        archiveArtifacts artifacts: 'output.pdf', onlyIfSuccessful: true
       }
     }
   }

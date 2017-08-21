@@ -2,8 +2,7 @@
 % Please edit documentation in R/plotting.R
 \name{plot_halfls}
 \alias{plot_halfls}
-\title{importFrom magrittr "%>%"
-Title}
+\title{Title}
 \usage{
 plot_halfls(name)
 }
@@ -14,6 +13,5 @@ plot_halfls(name)
 The ggplot2 object.
 }
 \description{
-importFrom magrittr "%>%"
 Title
 }
