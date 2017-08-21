@@ -32,10 +32,9 @@ plot_halfls <- function(name) {
                                 limits = c(0.5, 0.98),
                                 breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.97, 0.98)) +
     ggplot2::scale_colour_gradient(low = "gray", high = "gray") +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-                   legend.position="bottom")
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
   
-  e <- directlabels::direct.label(e, "top.pieces")
+  e <- directlabels::direct.label(e, list(method = "top.pieces", fontsize = 1))
   
   return(e)
 }
@@ -100,7 +99,8 @@ getSortingPosterior <- function() {
                                             y = ~`releaseF_50%`,
                                             color = ~`IgG`)) +
     ggplot2::geom_point() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+                   legend.position="bottom") +
     ggplot2::facet_wrap(~model) +
     ggplot2::scale_x_continuous(limits = c(0, 1)) +
     ggplot2::coord_equal() +
