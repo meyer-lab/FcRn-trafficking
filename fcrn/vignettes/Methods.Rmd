@@ -1,0 +1,34 @@
+---
+title: "Methods"
+author: "Aaron Meyer"
+date: "8/19/2017"
+output: html_document
+---
+
+## Caption
+
+**Figure TODO. ** A) AAAA. B) BBBB. C) CCCC. D) DDDD.
+
+## Methods
+
+All analysis was implemented in R and Stan, and can be found at [https://github.com/meyer-lab/FcRn-trafficking], release 1.0 (doi: [00.0000/arc0000000](https://doi.org/doi-url)).
+
+
+
+
+This is for the methods.
+
+
+
+$$ \frac{\delta C_c}{\delta t} = Q (C_p - C_c) $$
+
+
+
+$$ \frac{\delta C_p}{\delta t} V_p = Q C_c - Q C_p - Q_u C_p + Q_u C_e f_{sort} f_{release} $$
+
+
+
+
+
+
+$$ \frac{\delta C_e}{\delta t} V_e = Q_u \bigg(C_p + C_e \Big((1 - f_{release}) f_{sort} - 1\Big)\bigg) $$
