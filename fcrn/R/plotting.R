@@ -20,12 +20,12 @@ plot_halfls <- function(name) {
   
   e <- ggplot2::ggplot(output, ggplot2::aes_(x = ~sortF, y = ~releaseF, z = ~halfl)) + 
     ggplot2::geom_contour(ggplot2::aes_(color = ~..level..), breaks = c(48, 72, 96, 200, 300, 400, 500, 700)) +
-    ggplot2::annotate("text", label = "WT", x = best_fit$actual_sortF_wt, y = 0.99, color = "black") +
-    ggplot2::annotate("text", label = "DHS", x = best_fit$actual_sortF_dhs, y = 0.99, color = "black") +
+    ggplot2::annotate("text", label = "WT", x = best_fit$actual_sortF_wt, y = 0.99, color = "black", size = 1) +
+    ggplot2::annotate("text", label = "DHS", x = best_fit$actual_sortF_dhs, y = 0.99, color = "black", size = 1) +
     ggplot2::annotate("text", label = "LS", x = best_fit$actual_sortF_ls,
-                      y = best_fit$actual_release_ls, color = "black") +
+                      y = best_fit$actual_release_ls, color = "black", size = 1) +
     ggplot2::annotate("text", label = "YTE", x = best_fit$sortF_yte,
-                      y = best_fit$releaseF_yte, color = "black") +
+                      y = best_fit$releaseF_yte, color = "black", size = 1) +
     ggplot2::xlab("Endosomal Sorting Fraction") +
     ggplot2::ylab("Fraction Released at Surface") +
     ggplot2::scale_x_continuous(trans = "atanh",
