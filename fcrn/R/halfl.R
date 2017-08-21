@@ -25,6 +25,7 @@ halfl_fcrn <- function(th) {
   jac <- jacFunc(th)
   
   outt <- stats::uniroot(function(t) expm::expAtv(jac, c(C0, 0.0, 0.0), t)$eAtv[1] - C0/2,
+                         tol = 1E-1,
                          lower = 0,
                          upper = 10000)
   
