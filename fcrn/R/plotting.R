@@ -20,18 +20,19 @@ plot_halfls <- function(name) {
   
   e <- ggplot2::ggplot(output, ggplot2::aes_(x = ~sortF, y = ~releaseF, z = ~halfl)) + 
     ggplot2::geom_contour(ggplot2::aes_(color = ~..level..), breaks = c(48, 72, 96, 200, 300, 400, 500, 700)) +
-    ggplot2::annotate("text", label = "WT", x = best_fit$actual_sortF_wt, y = 0.99, color = "black") +
-    ggplot2::annotate("text", label = "DHS", x = best_fit$actual_sortF_dhs, y = 0.99, color = "black") +
+    ggplot2::annotate("text", label = "WT", x = best_fit$actual_sortF_wt, y = 0.99, color = "black", size = 2) +
+    ggplot2::annotate("text", label = "DHS", x = best_fit$actual_sortF_dhs, y = 0.99, color = "black", size = 2) +
     ggplot2::annotate("text", label = "LS", x = best_fit$actual_sortF_ls,
-                      y = best_fit$actual_release_ls, color = "black") +
+                      y = best_fit$actual_release_ls, color = "black", size = 2) +
     ggplot2::annotate("text", label = "YTE", x = best_fit$sortF_yte,
-                      y = best_fit$releaseF_yte, color = "black") +
+                      y = best_fit$releaseF_yte, color = "black", size = 2) +
     ggplot2::xlab("Endosomal Sorting Fraction") +
     ggplot2::ylab("Fraction Released at Surface") +
     ggplot2::scale_x_continuous(trans = "atanh",
                                 limits = c(0.5, 0.98),
-                                breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.96, 0.97, 0.98)) +
-    ggplot2::scale_colour_gradient(low = "gray", high = "gray")
+                                breaks = c(0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.97, 0.98)) +
+    ggplot2::scale_colour_gradient(low = "gray", high = "gray") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
   
   e <- directlabels::direct.label(e, "top.pieces")
   
@@ -46,10 +47,11 @@ plot_otherPs <- function() {
   globs <- dplyr::mutate_(loadAll(), 'param = as.factor(param)') %>%
     dplyr::filter(param == "Q" | param == "Qu" | param == "Vin" | param == "Vp")
   
-  gg <- ggplot2::ggplot(globs, ggplot2::aes_(x = interaction(model, param), y = ~`50%`, color = ~`model`)) +
+  gg <- ggplot2::ggplot(globs, ggplot2::aes_(x = ~interaction(model, param), y = ~`50%`, color = ~`model`)) +
     ggplot2::geom_point() +
-    ggplot2::geom_errorbar(aes(ymin = `25%`, ymax = `75%`)) +
-    ggplot2::theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    ggplot2::geom_errorbar(ggplot2::aes_(ymin = ~`25%`, ymax = ~`75%`)) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+                   legend.position="bottom")
   
   return(gg)
 }
@@ -97,7 +99,8 @@ getSortingPosterior <- function() {
                                             y = ~`releaseF_50%`,
                                             color = ~`IgG`)) +
     ggplot2::geom_point() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+                   legend.position="bottom") +
     ggplot2::facet_wrap(~model) +
     ggplot2::scale_x_continuous(limits = c(0, 1)) +
     ggplot2::coord_equal() +
@@ -118,13 +121,14 @@ getSortingPosterior <- function() {
 #' @return Object with all the plots assembled.
 #' @export
 full_plot <- function(save = T) {
-  ggplot2::theme_set(cowplot::theme_cowplot(font_size = 10))
+  ggplot2::theme_set(cowplot::theme_cowplot(font_size = 8))
   
   gg <- cowplot::ggdraw() +
-    cowplot::draw_plot(getSortingPosterior(), 0.4, 0.5, 1, 1) +
-    cowplot::draw_plot(plot_halfls("diff"), 0.0, 0.0, 0.3, 0.45) +
-    cowplot::draw_plot(plot_halfls("marlene"), 0.33, 0.0, 0.3, 0.45) +
-    cowplot::draw_plot(plot_halfls("scarlette"), 0.66, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_otherPs(), 0.33, 0.5, 0.3, 0.45) +
+    cowplot::draw_plot(getSortingPosterior(), 0.66, 0.5, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("diff"), 0.04, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("marlene"), 0.37, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("scarlette"), 0.7, 0.0, 0.3, 0.45) +
     cowplot::draw_plot_label(label = c("A", "B", "C", "D", "E", "F"),
                              size = 15,
                              x = c(0, 0.33, 0.66, 0, 0.33, 0.66),
