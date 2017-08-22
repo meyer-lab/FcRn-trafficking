@@ -14,12 +14,14 @@ pipeline {
         sh 'R CMD INSTALL --no-multiarch --with-keep.source fcrn'
         sh 'R -e \"library(fcrn); fcrn::full_plot()\"'
         sh 'pandoc -o README.pdf README.md'
+        sh 'pandoc -o README.docx README.md'
       }
     }
     stage('Report') {
       steps {
         archiveArtifacts artifacts: 'output.pdf', onlyIfSuccessful: true
         archiveArtifacts artifacts: 'README.pdf', onlyIfSuccessful: true
+        archiveArtifacts artifacts: 'README.docx', onlyIfSuccessful: true
         step([
           $class: 'CoberturaPublisher',
           autoUpdateHealth: true,
