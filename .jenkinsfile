@@ -19,6 +19,7 @@ pipeline {
     stage('Report') {
       steps {
         archiveArtifacts artifacts: 'output.pdf', onlyIfSuccessful: true
+        archiveArtifacts artifacts: 'README.pdf', onlyIfSuccessful: true
         step([
           $class: 'CoberturaPublisher',
           autoUpdateHealth: true,
