@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # FcRn-trafficking
 
 TODO: Check about updated PKPD values after the N increases.  
@@ -12,7 +17,7 @@ TODO: Need values for FcRn KO
 
 All analysis was implemented in R and Stan, and can be found at [https://github.com/meyer-lab/FcRn-trafficking], release 1.0 (doi: [00.0000/arc0000000](https://doi.org/doi-url)). Test conditions were identified throughout to ensure model accuracy.
 
-The trafficking of exogenous IgG was modeled according to the following relationships, consistent with the graphic presented in Figure XXXA. 
+The trafficking of exogenous IgG was modeled according to the following relationships, consistent with the graphic presented in Figure 4A. Exogenous IgG is modeled to exchange between three compartments representing a central extracellular, peripheral extracellular, and endosomal space. The central compartment is modeled as:
 
 $$ \frac{\delta C_c}{\delta t} = Q (C_p - C_c) $$
 
@@ -34,4 +39,6 @@ Implicit in this model are a few assumptions: First, there is no clearance outsi
 
 As the model jacobian was invariant with respect to the IgG concentrations, the ODE model was solved through the matrix exponential of the jacobian. The half-life was found through root finding with either the Brent routine or Newton's method.
 
-Model fitting was performed using Markov Chain Monte Carlo within Stan (CITE). Priors on $V_p$, $Q$, and $V_in$ were all specified as log-normal distributions with a mean and deviation of 1 in their respective units. The prior for $Q_u$ was specified as a log-normal distribution with mean $e^{0.1}$ and deviation of 0.5. Sorting parameter priors were specified to be flat, and in the order dictated by their relative affinity measurements. For example, if species A had a higher endosomal affinity than B, then $f_{sort,A}$ was given an even prior from 0 to 1, and $f_{sort,B}$ was given an even prior from 0 to $f_{sort,A}$.
+Model fitting was performed using Markov Chain Monte Carlo within Stan (1). Priors on $V_p$, $Q$, and $V_in$ were all specified as log-normal distributions with a mean and deviation of 1 in their respective units. The prior for $Q_u$ was specified as a log-normal distribution with mean $e^{0.1}$ and deviation of 0.5. Sorting parameter priors were specified to be flat, and in the order dictated by their relative affinity measurements. For example, if species A had a higher endosomal affinity than B, then $f_{sort,A}$ was given an even prior from 0 to 1, and $f_{sort,B}$ was given an even prior from 0 to $f_{sort,A}$. The half-life of each species was compared to a normal distribution representing the average and standard error of the *in vivo* experimental measurements. Sampling convergence was verified through autocorrelation analysis and the Geweke criterion.
+
+(1): Bob Carpenter, Andrew Gelman, Matthew D. Hoffman, Daniel Lee, Ben Goodrich, Michael Betancourt, Marcus Brubaker, Jiqiang Guo, Peter Li, and Allen Riddell. 2017. Stan: A probabilistic programming language. Journal of Statistical Software 76(1). DOI 10.18637/jss.v076.i01
