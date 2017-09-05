@@ -34,7 +34,7 @@ plot_halfls <- function(name) {
     ggplot2::scale_colour_gradient(low = "gray", high = "gray") +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
   
-  e <- directlabels::direct.label(e, "top.pieces")
+  e <- directlabels::direct.label(e, list("top.pieces", cex=0.5))
   
   return(e)
 }
@@ -47,11 +47,15 @@ plot_otherPs <- function() {
   globs <- dplyr::mutate_(loadAll(), 'param = as.factor(param)') %>%
     dplyr::filter(param == "Q" | param == "Qu" | param == "Vin" | param == "Vp")
   
-  gg <- ggplot2::ggplot(globs, ggplot2::aes_(x = ~interaction(model, param), y = ~`50%`, color = ~`model`)) +
-    ggplot2::geom_point() +
-    ggplot2::geom_errorbar(ggplot2::aes_(ymin = ~`25%`, ymax = ~`75%`)) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-                   legend.position="bottom")
+  gg <- ggplot2::ggplot(globs, ggplot2::aes_(x = ~`param`, y = ~`50%`, color = ~`model`)) +
+    ggplot2::geom_point(position = ggplot2::position_dodge(.9)) +
+    ggplot2::geom_errorbar(ggplot2::aes_(ymin = ~`25%`, ymax = ~`75%`),
+                           position = ggplot2::position_dodge(.9),
+                           width = 0.5) +
+    ggplot2::theme(legend.position = c(0.5, 0.9),
+                   legend.title=ggplot2::element_blank()) +
+    ggplot2::ylab("Parameter Value") +
+    ggplot2::xlab("")
   
   return(gg)
 }
@@ -100,10 +104,10 @@ getSortingPosterior <- function() {
                                             color = ~`IgG`)) +
     ggplot2::geom_point() +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-                   legend.position="bottom") +
+                   legend.position = c(0, 1),
+                   legend.title=ggplot2::element_blank()) +
     ggplot2::facet_wrap(~model) +
     ggplot2::scale_x_continuous(limits = c(0, 1)) +
-    ggplot2::coord_equal() +
     ggplot2::geom_errorbar(ggplot2::aes_(ymin = ~`releaseF_2.5%`, ymax = ~`releaseF_97.5%`)) +
     ggplot2::geom_errorbarh(ggplot2::aes_(xmin = ~`sortF_2.5%`, xmax = ~`sortF_97.5%`)) +
     ggplot2::xlab("Endosomal Sorting Fraction") +
@@ -124,11 +128,11 @@ full_plot <- function(save = T) {
   ggplot2::theme_set(cowplot::theme_cowplot(font_size = 8))
   
   gg <- cowplot::ggdraw() +
-    cowplot::draw_plot(plot_otherPs(), 0.33, 0.5, 0.3, 0.45) +
-    cowplot::draw_plot(getSortingPosterior(), 0.66, 0.5, 0.3, 0.45) +
-    cowplot::draw_plot(plot_halfls("diff"), 0.04, 0.0, 0.3, 0.45) +
-    cowplot::draw_plot(plot_halfls("marlene"), 0.37, 0.0, 0.3, 0.45) +
-    cowplot::draw_plot(plot_halfls("scarlette"), 0.7, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_otherPs(), 0.37, 0.5, 0.3, 0.45) +
+    cowplot::draw_plot(getSortingPosterior(), 0.7, 0.5, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("diff") + ggplot2::ggtitle("hemizygous Tg276"), 0.04, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("marlene") + ggplot2::ggtitle("Marlene"), 0.37, 0.0, 0.3, 0.45) +
+    cowplot::draw_plot(plot_halfls("scarlette") + ggplot2::ggtitle("Scarlette"), 0.7, 0.0, 0.3, 0.45) +
     cowplot::draw_plot_label(label = c("A", "B", "C", "D", "E", "F"),
                              size = 15,
                              x = c(0, 0.33, 0.66, 0, 0.33, 0.66),

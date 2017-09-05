@@ -14,4 +14,4 @@ README.docx: README.md
 	pandoc -o README.docx README.md
 
 clean:
-	rm -f output.pdf README.pdf README.docx
+	rm -f output.pdf README.pdf README.docx Rplots.pdf
