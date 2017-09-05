@@ -11,10 +11,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh 'R CMD INSTALL --no-multiarch --with-keep.source fcrn'
-        sh 'R -e \"library(fcrn); fcrn::full_plot()\"'
-        sh 'pandoc -o README.pdf README.md'
-        sh 'pandoc -o README.docx README.md'
+        sh 'make all'
       }
     }
     stage('Report') {
