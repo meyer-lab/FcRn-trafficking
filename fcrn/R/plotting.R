@@ -98,6 +98,8 @@ getSortingPosterior <- function() {
     reshape2::dcast(IgG + model ~ params + quantile, value.var = "value")
   
   sorts[is.na(sorts)] <- 1.0
+
+  print(sorts)
   
   g <- ggplot2::ggplot(sorts, ggplot2::aes_(x = ~`sortF_50%`,
                                             y = ~`releaseF_50%`,
