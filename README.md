@@ -5,10 +5,6 @@ output:
 ---
 # FcRn-trafficking
 
-TODO: Check about updated PKPD values after the N increases.  
-TODO: Spread data is stdev — check this is right  
-TODO: Need values for FcRn KO  
-
 ## Caption
 
 **Figure 4. The relative half-lives of each IgG mutant can be explained through a model of endosomal sorting and release.** A) Graphical representation of the IgG endosomal sorting model. B) Posterior distributions of each volume and transport model. C) Endosomal and surface sorting parameters for each *in vivo* model. D) Predicted half-life of IgG with the specified endosomal (x) and surface (y) sorting fractions based on the fit model. E) Identical prediction to (D) for TODO: Marlene. F) Identical prediction to (D) for TODO: Scarlette.
