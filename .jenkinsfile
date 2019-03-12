@@ -2,7 +2,10 @@ pipeline {
   agent any
   stages {
     stage('Clean') {
-      steps { sh 'git clean -ffdx' }
+      steps {
+        sh 'git clean -ffdx'
+        sh 'packrat::init(\".\")'
+      }
     }
     stage('Test') {
       steps {
