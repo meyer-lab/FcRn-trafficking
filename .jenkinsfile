@@ -6,7 +6,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh 'R -e \"install.package(\'covr\')\"'
+        sh 'R -e \"install.packages(\'covr\')\"'
         sh 'Rscript -e \"covr::to_cobertura(covr::package_coverage(\'./fcrn\', quiet = F))\"'
       }
     }
