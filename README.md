@@ -3,6 +3,9 @@ output:
   pdf_document: default
   html_document: default
 ---
+
+[![Build Status](https://travis-ci.org/meyer-lab/FcRn-trafficking.svg?branch=master)](https://travis-ci.org/meyer-lab/FcRn-trafficking)
+
 # FcRn-trafficking
 
 ## Caption
