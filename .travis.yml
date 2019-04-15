@@ -25,4 +25,5 @@ before_install:
   - cd fcrn
 
 after_success:
+  - R -e "library(fcrn); fcrn::full_plot()"
   - Rscript -e 'covr::codecov()'
