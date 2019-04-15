@@ -21,3 +21,5 @@ Imports:
   tidyr,
   cowplot,
   magrittr
+Suggests:
+  testthat
