@@ -22,18 +22,7 @@ pipeline {
     stage('Report') {
       steps {
         archiveArtifacts artifacts: 'output.pdf', onlyIfSuccessful: true
-        archiveArtifacts artifacts: 'README.pdf', onlyIfSuccessful: true
-        archiveArtifacts artifacts: 'README.docx', onlyIfSuccessful: true
-        step([
-          $class: 'CoberturaPublisher',
-          autoUpdateHealth: true,
-          autoUpdateStability: true,
-          coberturaReportFile: 'cobertura.xml',
-          failNoReports: true,
-          failUnhealthy: true,
-          failUnstable: true,
-          sourceEncoding: 'UTF_8',
-          zoomCoverageChart: true])
+        cobertura coberturaReportFile: 'cobertura.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
       }
     }
   }
