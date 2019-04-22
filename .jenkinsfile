@@ -4,7 +4,7 @@ pipeline {
     stage('Clean') {
       steps {
         sh 'git clean -ffdx'
-        sh 'packrat::init(\".\")'
+        sh 'Rscript -e \"packrat::init(\'.\')\"'
       }
     }
     stage('Test') {
