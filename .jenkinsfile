@@ -9,7 +9,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh 'Rscript -e \"devtools::install_deps(\'.\')\"'
+        sh 'Rscript -e \"devtools::install_deps(\'./fcrn\')\"'
         sh 'R CMD INSTALL --no-multiarch --with-keep.source fcrn'
         sh 'Rscript -e \"covr::to_cobertura(covr::package_coverage(\'./fcrn\', quiet = F))\"'
       }
