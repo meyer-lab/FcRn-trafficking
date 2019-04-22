@@ -4,12 +4,12 @@ pipeline {
     stage('Clean') {
       steps {
         sh 'git clean -ffdx'
-        sh 'Rscript -e \"install.packages(\'packrat\')\"'
-        sh 'Rscript -e \"packrat::init(\'.\')\"'
+        sh 'Rscript -e \"install.packages(\'devtools\')\"'
       }
     }
     stage('Test') {
       steps {
+        sh 'Rscript -e \"devtools::install_deps(\'./fcrn\')\"'
         sh 'R CMD INSTALL --no-multiarch --with-keep.source fcrn'
         sh 'Rscript -e \"covr::to_cobertura(covr::package_coverage(\'./fcrn\', quiet = F))\"'
       }
@@ -22,18 +22,7 @@ pipeline {
     stage('Report') {
       steps {
         archiveArtifacts artifacts: 'output.pdf', onlyIfSuccessful: true
-        archiveArtifacts artifacts: 'README.pdf', onlyIfSuccessful: true
-        archiveArtifacts artifacts: 'README.docx', onlyIfSuccessful: true
-        step([
-          $class: 'CoberturaPublisher',
-          autoUpdateHealth: true,
-          autoUpdateStability: true,
-          coberturaReportFile: 'cobertura.xml',
-          failNoReports: true,
-          failUnhealthy: true,
-          failUnstable: true,
-          sourceEncoding: 'UTF_8',
-          zoomCoverageChart: true])
+        cobertura coberturaReportFile: 'cobertura.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
       }
     }
   }
