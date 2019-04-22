@@ -20,4 +20,5 @@ Imports:
   reshape2,
   tidyr,
   cowplot,
-  magrittr
+  magrittr,
+  covr
