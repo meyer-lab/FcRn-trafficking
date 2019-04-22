@@ -1,9 +1,6 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
 # FcRn-trafficking
+
+[![Build Status](https://transduc.seas.ucla.edu/buildStatus/icon?job=meyer-lab%2FFcRn-trafficking%2Fmaster)](https://transduc.seas.ucla.edu/job/meyer-lab/job/FcRn-trafficking/job/master/)
 
 ## Caption
 
