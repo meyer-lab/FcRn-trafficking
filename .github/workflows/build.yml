@@ -30,6 +30,8 @@ jobs:
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
+      with:
+        file: ./cobertura.xml
     
     - name: Save output
       uses: actions/upload-artifact@v2
