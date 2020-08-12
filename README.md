@@ -1,6 +1,6 @@
 # FcRn-trafficking
 
-[![Build Status](https://transduc.seas.ucla.edu/buildStatus/icon?job=meyer-lab%2FFcRn-trafficking%2Fmaster)](https://transduc.seas.ucla.edu/job/meyer-lab/job/FcRn-trafficking/job/master/)
+![CI](https://github.com/meyer-lab/FcRn-trafficking/workflows/CI/badge.svg)
 
 ## Caption
 
