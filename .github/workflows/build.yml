@@ -21,6 +21,7 @@ jobs:
 
     - name: Test
       run: |
+        Rscript -e 'install.packages("devtools")'
         Rscript -e 'devtools::install_deps("./fcrn")'
         R CMD INSTALL --no-multiarch --with-keep.source fcrn
         Rscript -e 'covr::to_cobertura(covr::package_coverage("./fcrn", quiet = F))'
