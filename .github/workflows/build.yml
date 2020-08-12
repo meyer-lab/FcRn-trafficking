@@ -19,16 +19,17 @@ jobs:
     # Install R
     - uses: r-lib/actions/setup-r@v1
 
-    # Runs a set of commands using the runners shell
     - name: Test
       run: |
         Rscript -e 'devtools::install_deps("./fcrn")'
         R CMD INSTALL --no-multiarch --with-keep.source fcrn
         Rscript -e 'covr::to_cobertura(covr::package_coverage("./fcrn", quiet = F))'
-        
-    # Runs a set of commands using the runners shell
-    - name: Test
+
+    - name: Make output
       run: make all
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
     
     - name: Save output
       uses: actions/upload-artifact@v2
