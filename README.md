@@ -1,6 +1,6 @@
-# FcRn-trafficking
+# An engineered human Fc domain that behaves like a pH-toggle switch for ultra-long circulation persistence
 
-![CI](https://github.com/meyer-lab/FcRn-trafficking/workflows/CI/badge.svg)
+Code for the analysis in [Lee _et al_](https://doi.org/10.1038/s41467-019-13108-2).
 
 ## Caption
 
